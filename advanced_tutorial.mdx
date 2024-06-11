@@ -4,3 +4,48 @@ description: A detailed guide from zero to GUI surfer with multiple approaches
 icon: screwdriver-wrench
 ---
 
+In this guide, we'll show how to create your own agent using surfkit and some of the techniques we came up along the way. 
+
+## Prerequisites
+
+* Install `poetry` (see [Poetry docs](https://python-poetry.org/docs/)).
+* Install `surfkit` (see [Quickstart](./quickstart)).
+* Set up your local or cloud environment (see [Configuration](./configuration)).
+* Install Tesseract on your machine (see [Tesseract docs](https://tesseract-ocr.github.io/tessdoc/Installation.html)).
+
+## Creating an Agent
+
+Creating a dummy agent that follows the SurfKit protocol is super easy:
+
+```
+mkdir surfhamster
+cd surfhamster 
+surfkit new
+```
+
+The last command will ask you to answer a few questions:
+
+```
+Enter agent name: SurfHamster
+Describe the agent: The AI agent that can navigate GUIs and do tasks in them.
+Enter git user reference (Your Name <your.email@gmail.com>): 
+Enter docker image repo: 
+Enter icon url (https://tinyurl.com/y5u4u7te): 
+```
+
+Feel free to leave the docker image repo empty for now and use a standard icon. When you run these commands, an Agent project will be initialized inside the folder that you created. It contains all components you need to give it a try:
+
+```
+surfkit create tracker -n hound001 -r docker 
+surfkit create device -n eve001 -p qemu
+surfkit create agent -n robby001 -r process
+
+surfkit solve -a robby001 --device eve001 --tracker hound001 -d "Find a cool cat image in the internet" --starting-url "google.com"
+```
+
+If the browser tab with a VM desktop and an agent log opens and the agent starts solving the task, congratulations: you have just created your first agent!
+
+
+
+
+
