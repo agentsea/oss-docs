@@ -44,9 +44,9 @@
       "group": "AgentDesk",
       "pages": [
         "agentdesk/intro",
-        "agentdesk/cli",
         "agentdesk/demo",
         "agentdesk/note",
+        "agentdesk/cli",
         "agentdesk/api",
         "agentdesk/repo"
       ]
