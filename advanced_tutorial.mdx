@@ -33,7 +33,8 @@ Enter docker image repo:
 Enter icon url (https://tinyurl.com/y5u4u7te): 
 ```
 
-Feel free to leave the docker image repo empty for now and use a standard icon. When you run these commands, an Agent project will be initialized inside the folder that you created. It contains all components you need to give it a try:
+Feel free to leave the docker image repo empty for now and use a standard icon. When you run these commands, 
+an Agent project will be initialized inside the folder that you created. It contains all components you need to give it a try:
 
 ```
 surfkit create tracker -n hound001 -r docker 
@@ -44,7 +45,8 @@ surfkit solve -a robby001 --device eve001 --tracker hound001 \
     -d "Find a cool cat image in the internet" --starting-url "google.com"
 ```
 
-If the browser tab with a VM desktop and an agent log opens and the agent starts solving the task, congratulations: you have just created your first agent!
+If the browser tab with a VM desktop and an agent log opens and the agent starts solving the task, 
+congratulations: you have just created your first agent!
 
 ## How does it work?
 
@@ -61,15 +63,22 @@ Let's briefly look inside the repository. There is a bunch of files there, but t
 * `agent.py` is the main class that implements the logic of the agent: 
   * at the beginning of the task execution we explain to the LLM what this agent is expected to do; 
   * then we enter the loop: 
-    * given the task and the history of the chat, as well as the state of the desktop, we ask an LLM to give us the next action and the reason for it; 
+    * given the task and the history of the chat, as well as the state of the desktop, we ask an 
+    LLM to give us the next action and the reason for it; 
     * the next action is returned by LLM as a JSON, which is checked against the available device and executed upon it;
-  * we exit the loop when either the LLM returns an action marked as "result" (which means that it thinks that the task is solved), or the maximum amount of iterations is reached (30 by default).
+  * we exit the loop when either the LLM returns an action marked as "result" (which means that it thinks 
+  that the task is solved), or the maximum amount of iterations is reached (30 by default).
 
 ### Architecture
 
-This type of agents is designed to work with a Desktop device. The Desktop device has an interface that allows manipulating the VM (in the cloud or a local one) via a mouse and a keyboard programmatically. You have just created it above via `surfkit create device`.
+This type of agents is designed to work with a Desktop device. The Desktop device has an interface 
+that allows manipulating the VM (in the cloud or a local one) via a mouse and a keyboard programmatically. 
+You have just created it above via `surfkit create device`.
 
-When the agent is trying to solve a given task, it manipulates the device. The device implements the `Tool` interface and therefore has a schema of actions. We get this schema in JSON format, ask an LLM to return the next action in this format, and then on each step of solving a task, we have an action that can be passed back to the device to be executed. 
+When the agent is trying to solve a given task, it manipulates the device. The device implements 
+the `Tool` interface and therefore has a schema of actions. We get this schema in JSON format, 
+ask an LLM to return the next action in this format, and then on each step of solving a task, 
+we have an action that can be passed back to the device to be executed. 
 
 For example, the action returned by LLM, may look like this:
 
@@ -88,25 +97,35 @@ For example, the action returned by LLM, may look like this:
 
 When this object is returned to device, the device can execute it: that is, type the text "cool cat images" using keyboard.
 
-As said above, the actions include the low-level operations with a mouse and a keyboard, like moving mouse, clicking on coordinates, typing letters. They also include taking the screenshot and getting the current mouse coordinates, which helps an MLLM to choose the next action towards the task completion.
+As said above, the actions include the low-level operations with a mouse and a keyboard, 
+like moving mouse, clicking on coordinates, typing letters. They also include taking the screenshot and getting 
+the current mouse coordinates, which helps an MLLM to choose the next action towards the task completion.
 
 The agent we just created works using these primitives: typing text and clicking mouse. Cool, right? However, there is a problem.
 
 ### Problem
 
-And this is a serious problem: at the moment of writing this tutorial (June 2024, "gpt-4o" was released not so long ago), all frontier MLLMs are horrible att identifying coordinates of the object on a screenshot. They can reason quite well about what should be clicked or typed to achieve the goal, but they can't return correct coordinates for that.
+And this is a serious problem: at the moment of writing this tutorial (June 2024, "gpt-4o" was released not so long ago), 
+all frontier MLLMs are horrible att identifying coordinates of the object on a screenshot. They can reason quite well about
+what should be clicked or typed to achieve the goal, but they can't return correct coordinates for that.
 
-Therefore, the main area of improvements for this type of agents is helping them to **convert an idea on what should be clicked to actual coordinates on a screen**. To do that, we need to expand the toolset of our device and add a semantic layer to it, so that instead of "click on (400, 350)" our agent will advice to "click on a big 'Search' button at the bottom of the screen".
+Therefore, the main area of improvements for this type of agents is helping them to **convert an idea on what should be 
+clicked to actual coordinates on a screen**. To do that, we need to expand the toolset of our device and add a semantic 
+layer to it, so that instead of "click on (400, 350)" our agent will advice to "click on a big 'Search' button at the bottom of the screen".
 
 From the code point of view, we'll do the following:
 
-* We'll introduce the `SemanticDesktop` class, which is essentially a wrapper around the Desktop that we already have, and inherits all the actions that it provides.
-* We'll then update the `Agent` class to use the `SemanticDesktop` alongside the actual `Desktop`: we want the actions to be taken from and by `SemanticDesktop` and translated to the low-level `Desktop` operations when needed; we also want to keep using the screenshoting and mouse-catching abilities from `Desktop`;
+* We'll introduce the `SemanticDesktop` class, which is essentially a wrapper around the Desktop that we already have, 
+and inherits all the actions that it provides.
+* We'll then update the `Agent` class to use the `SemanticDesktop` alongside the actual `Desktop`: we want the actions 
+to be taken from and by `SemanticDesktop` and translated to the low-level `Desktop` operations when needed; 
+we also want to keep using the screenshoting and mouse-catching abilities from `Desktop`;
 * After that, we'll introduce a new action to the `SemanticDesktop`: `click_object`.
 
 ## SemanticDesktop
 
-*Note*: You can find the code for this step of the tutorial [here](https://github.com/agentsea/surfhamster/tree/1fc5562be20c2731974222405160aef2f4168717).
+*Note*: You can find the code for this step of the tutorial 
+[here](https://github.com/agentsea/surfhamster/tree/1fc5562be20c2731974222405160aef2f4168717).
 
 First, we need to refine our `SemanticDesktop`. It will interit from `Tool`, which would allow us pass it to the MLLM.
 
@@ -132,7 +151,8 @@ The most interesting part of this class is that we add a new method, `click_obje
         self._click_coords(screen_size["x"] // 2, screen_size["y"] // 2, "single")
 ```
 
-As you can see, right now it is quite non-intelligent: it simply returns the coordinated at middle of the screen. Don't worry, we'll work on it later!
+As you can see, right now it is quite non-intelligent: it simply returns 
+the coordinated at middle of the screen. Don't worry, we'll work on it later!
 
 As we now have this class, we can update the `Agent` class too:
 
@@ -140,7 +160,10 @@ As we now have this class, we can update the `Agent` class too:
 code for agent.py
 ```
 
-Note that we replace some of the usages of the `Desktop` device by the `SemanticDesktop` device, but not all of them. The best way to explain it is that we get observations from the `Desktop` (a screenshot and mouse coordinates), but we run the actions of and by the `SemanticDesktop`. We also remove some actions we don't need our agent to know:
+Note that we replace some of the usages of the `Desktop` device by the `SemanticDesktop` 
+device, but not all of them. The best way to explain it is that we get observations from the `Desktop` 
+(a screenshot and mouse coordinates), but we run the actions of and by the `SemanticDesktop`. 
+We also remove some actions we don't need our agent to know:
 
 ```python
         tools = semdesk.json_schema(
@@ -156,12 +179,14 @@ Note that we replace some of the usages of the `Desktop` device by the `Semantic
         )
 ```
 
-If you run the agent now, you'll notice in the console logs, that the schema (the available actions) is changed, and that the agent can now return a new kind of actions:
+If you run the agent now, you'll notice in the console logs, that the schema (the available actions) 
+is changed, and that the agent can now return a new kind of actions:
 
 ```python
 {
   "observation": "The cursor is near the address bar and the search tab at the top left of the Google homepage.",
-  "reason": "To search for a cool cat image, the next step is to type the search query into the Google search box located in the center of the screen.",
+  "reason": "To search for a cool cat image, the next step is to type the search query into the Google search box 
+  located in the center of the screen.",
   "action": {
     "name": "click_object",
     "parameters": {
@@ -176,19 +201,26 @@ The only problem now is that the implementation of this `click_object` function 
 
 ## Adding the Grid
 
-*Note*: You can find the code for this step of the tutorial [here](https://github.com/agentsea/surfhamster/tree/4a80d5f1fab16d61a0669ffca1507f6768c2b8dd).
+*Note*: You can find the code for this step of the tutorial 
+[here](https://github.com/agentsea/surfhamster/tree/4a80d5f1fab16d61a0669ffca1507f6768c2b8dd).
 
-There are many ways to assist an MLLM in picking correctly the exact location of the object on a screenshot. None of them is perfect (to the best of our knowledge at the moment of writing this tutorial), but combining a few in one agent can guarantee pretty high accuracy. Let's start with something simple.
+There are many ways to assist an MLLM in picking correctly the exact location of the object on a screenshot. 
+None of them is perfect (to the best of our knowledge at the moment of writing this tutorial), 
+but combining a few in one agent can guarantee pretty high accuracy. Let's start with something simple.
 
-We call this approach "The Grid". The idea is to put a bunch of dots with numbers in the corners of the cells on NxN grid on a screen. Honestly, it's easier to show than to explain:
+We call this approach "The Grid". The idea is to put a bunch of dots with numbers in the corners of the cells on 
+the NxN grid on a screen. Honestly, it's easier to show than to explain:
 
 **IMAGE WITH GRID**
 
-If we desaturate the original screenshot and put this grid on top, we may ask an MLLM which dot is the closest one to the place which the agent wants to click (for example, a search bar or a button). In order to do that, we'll start a tiny thread with an MLLM (outside of the main thread) just to address this question. 
+If we desaturate the original screenshot and put this grid on top, we may ask an MLLM which dot is the closest one 
+to the place which the agent wants to click (for example, a search bar or a button). In order to do that, 
+we'll start a tiny thread with an MLLM (outside of the main thread) just to address this question. 
 
 We then simply convert the number that an MLLM returns back to the coordinates on a screen.
 
-First, we need to define a bunch of utility functions to generate this grid, merge it with the main image, and also convert images to and from b64 because it's the only format of the image that gpt-4o accepts.
+First, we need to define a bunch of utility functions to generate this grid, merge it with the main image, 
+and also convert images to and from b64 because it's the only format of the image that gpt-4o accepts.
 
 ```
 code for image.py
@@ -200,9 +232,14 @@ Now, we can seriously update the `click_object` function:
 code for click_object function in tool.py
 ```
 
-When you run the agent now, you can see the images with grid that it generates, in the debug tab. You can see that MLLM is picking the correct number pretty reliably. This method is obviously more intelligent than pciking the middle of the screen. However, there is a good change to miss the correct spot because the element we are interested it is not under the middle of the dot.
+When you run the agent now, you can see the images with grid that it generates, in the debug tab. 
+You can see that MLLM is picking the correct number pretty reliably. This method is obviously more intelligent 
+than picking the middle of the screen. However, there is a good change to miss the correct spot because the element 
+we are interested it is not under the middle of the dot.
 
-To address this issue, we go on Zooming in and scaling up the part of the screenshot surrounding the chosen dot. You can see the implementation in the [SurfSlicer](https://github.com/agentsea/surfslicer) agent.
+To address this issue, we go on Zooming in and scaling up the part of the screenshot surrounding the chosen dot. 
+You can see the implementation in the [SurfSlicer](https://github.com/agentsea/surfslicer) agent.
+
 
 
 
