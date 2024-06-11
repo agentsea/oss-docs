@@ -174,6 +174,35 @@ If you run the agent now, you'll notice in the console logs, that the schema (th
 
 The only problem now is that the implementation of this `click_object` function is pretty dumb. Let's fix this.
 
+## Adding the Grid
+
+*Note*: You can find the code for this step of the tutorial [here](https://github.com/agentsea/surfhamster/tree/4a80d5f1fab16d61a0669ffca1507f6768c2b8dd).
+
+There are many ways to assist an MLLM in picking correctly the exact location of the object on a screenshot. None of them is perfect (to the best of our knowledge at the moment of writing this tutorial), but combining a few in one agent can guarantee pretty high accuracy. Let's start with something simple.
+
+We call this approach "The Grid". The idea is to put a bunch of dots with numbers in the corners of the cells on NxN grid on a screen. Honestly, it's easier to show than to explain:
+
+**IMAGE WITH GRID**
+
+If we desaturate the original screenshot and put this grid on top, we may ask an MLLM which dot is the closest one to the place which the agent wants to click (for example, a search bar or a button). In order to do that, we'll start a tiny thread with an MLLM (outside of the main thread) just to address this question. 
+
+We then simply convert the number that an MLLM returns back to the coordinates on a screen.
+
+First, we need to define a bunch of utility functions to generate this grid, merge it with the main image, and also convert images to and from b64 because it's the only format of the image that gpt-4o accepts.
+
+```
+code for image.py
+```
+
+Now, we can seriously update the `click_object` function:
+
+```
+code for click_object function in tool.py
+```
+
+When you run the agent now, you can see the images with grid that it generates, in the debug tab. You can see that MLLM is picking the correct number pretty reliably. This method is obviously more intelligent than pciking the middle of the screen. However, there is a good change to miss the correct spot because the element we are interested it is not under the middle of the dot.
+
+To address this issue, we go on Zooming in and scaling up the part of the screenshot surrounding the chosen dot. You can see the implementation in the [SurfSlicer](https://github.com/agentsea/surfslicer) agent.
 
 
 
