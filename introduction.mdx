@@ -25,16 +25,19 @@ You can also use our tools with other popular frameworks like LlamaIndex and Lan
 Our current projects:
 
 * `SurfKit`: an orchestartor for building and launching agents locally, in a docker container or in the cloud. Think of it as k8s for agents.
-* `AgentD`: a powerful daemon that makes a Linux desktop OS accessible to AI agents, like a remote desktop app but where the agent takes all the actions.
+* `DeviceBay`: DeviceBay offers pluggable devices ready to be used by AI agents, complete with a UI experience.
 * `ToolFuse`: a library that wraps up scripts, 3rd party apps and APIs as ``Tool`` implementations for AI agents.
+* `AgentD`: a powerful daemon that makes a Linux desktop OS accessible to AI agents, like a remote desktop app but where the agent takes all the actions.
 * `AgentDesk`: a library for running ``Agentd`` powered VMs as ``Tool`` instances.
+* `Taskara`: Task management for AI agents. 
 * `ThreadMem`: a library for building multi-role persistent threads that keep track of all the messages and diloagues with your agents.
 
 Build your own agent or use all our tools together with your premade alpha agents. They use a combo of old school computer vision techniques, mashed up with multimodal models and our tools:
 
 * `SurfPizza`: an agent that explores by slicing up the screen and returning a composite to the multimodal model to pick where to go next.
 * `SurfSlicer`: divides up the screen into dots that signify regions and the multimodal model picks the dot closest to what it's looking for and then zooms in and does it again, zeroing in on its target.
-* `SurfMonsta`: Out best performing agent. It combines all of our techniques, like SurfSlicer regions, the SAM model for bounding and segmenting a GUI, OCR for text positioning and a GAN for upscaling smaller slices of images to give the multimodal model the best resolution.
+* `SurfNinja`: A precision based second gen AI agent.
+* `SurfMonsta`: Our best performing agent: It combines a number of our techniques, like SurfSlicer regions, the SAM model for bounding and segmenting a GUI, OCR for text positioning and a GAN for upscaling smaller slices of images to give the multimodal model the best resolution.
 
 The AgentSea platform is currently in open beta release.
 
