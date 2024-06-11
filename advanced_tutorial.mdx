@@ -17,7 +17,7 @@ In this guide, we'll show how to create your own agent using surfkit and some of
 
 Creating a dummy agent that follows the SurfKit protocol is super easy:
 
-```
+```bash
 mkdir surfhamster
 cd surfhamster 
 surfkit new
@@ -36,7 +36,7 @@ Enter icon url (https://tinyurl.com/y5u4u7te):
 Feel free to leave the docker image repo empty for now and use a standard icon. When you run these commands, 
 an Agent project will be initialized inside the folder that you created. It contains all components you need to give it a try:
 
-```
+```bash
 surfkit create tracker -n hound001 -r docker 
 surfkit create device -n eve001 -p qemu
 surfkit create agent -n robby001 -r process
@@ -128,10 +128,7 @@ we also want to keep using the screenshoting and mouse-catching abilities from `
 [here](https://github.com/agentsea/surfhamster/tree/1fc5562be20c2731974222405160aef2f4168717).
 
 First, we need to refine our `SemanticDesktop`. It will interit from `Tool`, which would allow us pass it to the MLLM.
-
-```
-code for tool.py
-```
+See the full code for `tool.py` [here](link).
 
 The most interesting part of this class is that we add a new method, `click_object`:
 
@@ -154,11 +151,7 @@ The most interesting part of this class is that we add a new method, `click_obje
 As you can see, right now it is quite non-intelligent: it simply returns 
 the coordinated at middle of the screen. Don't worry, we'll work on it later!
 
-As we now have this class, we can update the `Agent` class too:
-
-```
-code for agent.py
-```
+As we now have this class, we can update the `Agent` class too. See the ful code for `agent.py` [here](link).
 
 Note that we replace some of the usages of the `Desktop` device by the `SemanticDesktop` 
 device, but not all of them. The best way to explain it is that we get observations from the `Desktop` 
@@ -185,8 +178,7 @@ is changed, and that the agent can now return a new kind of actions:
 ```python
 {
   "observation": "The cursor is near the address bar and the search tab at the top left of the Google homepage.",
-  "reason": "To search for a cool cat image, the next step is to type the search query into the Google search box 
-  located in the center of the screen.",
+  "reason": "To search for a cool cat image, the next step is to type the search query into the Google search box located in the center of the screen.",
   "action": {
     "name": "click_object",
     "parameters": {
@@ -220,17 +212,147 @@ we'll start a tiny thread with an MLLM (outside of the main thread) just to addr
 We then simply convert the number that an MLLM returns back to the coordinates on a screen.
 
 First, we need to define a bunch of utility functions to generate this grid, merge it with the main image, 
-and also convert images to and from b64 because it's the only format of the image that gpt-4o accepts.
-
-```
-code for image.py
-```
+and also convert images to and from b64 because it's the only format of the image that gpt-4o accepts. See the code
+for `image.py` [here](link).
 
 Now, we can seriously update the `click_object` function:
 
+```python
+    @action
+    def click_object(self, description: str, type: str) -> None:
+        """Click on an object on the screen
+
+        Args:
+            description (str): The description of the object including its general location, for example
+                "a round dark blue icon with the text 'Home' in the top-right of the image", please be a generic as possible
+            type (str): Type of click, can be 'single' for a single click or
+                'double' for a double click. If you need to launch an application from the desktop choose 'double'
+        """
+
+        if type != "single" and type != "double":
+            raise ValueError("type must be'single' or 'double'")
+
+        color_number = os.getenv("COLOR_NUMBER", "yellow")
+        color_circle = os.getenv("COLOR_CIRCLE", "red")
+
+        click_hash = hashlib.md5(description.encode()).hexdigest()[:5]
+
+        class ZoomSelection(BaseModel):
+            """Zoom selection model"""
+
+            number: int = Field(
+                ...,
+                description=f"Number of the dot closest to the place we want to click.",
+            )
+
+        current_img_b64 = self.desktop.take_screenshot()
+        current_img = b64_to_image(current_img_b64)
+        img_width, img_height = current_img.size
+
+        # number of "cells" along one side; the numbers are in the corners of those "cells"
+        n = 10
+
+        thread = RoleThread()
+
+        prompt = f"""
+        You are an experienced AI trained to find the elements on the screen.
+        You see a screenshot of the web application. 
+        I have drawn some big {color_number} numbers on {color_circle} circles on this image 
+        to help you to find required elements.
+        Please tell me the closest big {color_number} number on a {color_circle} circle to the center of the {description}.
+        Please note that some circles may lay on the {description}. If that's the case, return the number in any of these circles.
+        Please return you response as raw JSON following the schema {ZoomSelection.model_json_schema()}
+        Be concise and only return the raw json, for example if the circle you wanted to select had a number 3 in it
+        you would return {{"number": 3}}
+        """
+
+        self.task.post_message(
+            role="assistant",
+            msg=f"Clicking '{type}' on object '{description}'",
+            thread="debug",
+            images=[image_to_b64(current_img)],
+        )
+
+        image_path = os.path.join(self.img_path, f"{click_hash}_current.png")
+        current_img.save(image_path)
+        img_width, img_height = current_img.size
+
+        screenshot_b64 = image_to_b64(current_img)
+        self.task.post_message(
+            role="assistant",
+            msg=f"Current image",
+            thread="debug",
+            images=[screenshot_b64],
+        )
+
+        grid_path = os.path.join(self.img_path, f"{click_hash}_grid.png")
+        create_grid_image(
+            img_width, img_height, color_circle, color_number, n, grid_path
+        )
+
+        merged_image_path = os.path.join(
+            self.img_path, f"{click_hash}_merge.png"
+        )
+        merged_image = superimpose_images(image_path, grid_path, 1)
+        merged_image.save(merged_image_path)
+
+        merged_image_b64 = image_to_b64(merged_image)
+        self.task.post_message(
+            role="assistant",
+            msg=f"Merged image",
+            thread="debug",
+            images=[merged_image_b64],
+        )
+
+        msg = RoleMessage(
+            role="user",
+            text=prompt,
+            images=[merged_image_b64],
+        )
+        thread.add_msg(msg)
+
+        response = router.chat(
+            thread, namespace="zoom", expect=ZoomSelection, agent_id="SurfHamster", retries=1
+        )
+        if not response.parsed:
+            raise SystemError("No response parsed from zoom")
+        
+        self.task.add_prompt(response.prompt)
+
+        zoom_resp = response.parsed
+        self.task.post_message(
+            role="assistant",
+            msg=f"Selection {zoom_resp.model_dump_json()}",
+            thread="debug",
+        )
+        console.print(JSON(zoom_resp.model_dump_json()))
+        chosen_number = zoom_resp.number
+
+        # We convert the chosen number into screen coordinates
+        # of the corresponding dot on the grid
+        x_cell = (chosen_number - 1) // (n - 1) + 1
+        y_cell = (chosen_number - 1) % (n - 1) + 1
+        cell_width = img_width // n
+        cell_height = img_height // n
+        click_x = x_cell * cell_width
+        click_y = y_cell * cell_height
+
+        self.task.post_message(
+            role="assistant",
+            msg=f"Clicking coordinates {click_x}, {click_y}",
+            thread="debug",
+        )
+        self._click_coords(x=click_x, y=click_y, type=type)
+        return
 ```
-code for click_object function in tool.py
-```
+
+It looks like a lot is going on here, but if you look closely, we just do a few simple steps:
+
+* We generate the image with the grid, same as shown above.
+* We craft the prompt to instruct our MLLM to return to us exactly what we need: a number of the closest dot.
+* We run the prompt and get out result.
+* We convert the number back to screen coordinates.
+* Along the way, we record the stuff in the "debug" channel of our agent, so that you can see what exactly is going on, in the UI.
 
 When you run the agent now, you can see the images with grid that it generates, in the debug tab. 
 You can see that MLLM is picking the correct number pretty reliably. This method is obviously more intelligent 
@@ -239,6 +361,71 @@ we are interested it is not under the middle of the dot.
 
 To address this issue, we go on Zooming in and scaling up the part of the screenshot surrounding the chosen dot. 
 You can see the implementation in the [SurfSlicer](https://github.com/agentsea/surfslicer) agent.
+
+## Adding Tesseract
+
+*Note*: You can find the code for this step of the tutorial 
+[here](https://github.com/agentsea/surfhamster/tree/167e73de555986eec76bc25b57c2e433b37ee92f).
+
+As noted above, you can achieve the best results in your agent by combining many methods. One of very simple
+but powerfull ideas is to use plain old classical OCR to find the text elements whenever it makes sense and 
+click on them. In case of there is no text to click on (because the object is an icon, for example) or the OCR
+engine doesn't find any text we need (because it's a white text on a blue background, for example), we
+fall back to the Grid. But if we can find the text, it gives us two benefits:
+
+* Finding text with a bounding box using Tesseract is exceptionally fast in comparison to OpenAI API calls: 
+you get the result in a fraction of a second.
+* The bounding box is very accurate: we can safely click in the middle of the coordinates and be sure that we hit the oject.
+
+**IMAGE WITH A BOUNDING BOX**
+
+First of all, install `pytesseract`:
+
+```
+poetry add pytesseract
+```
+
+Now, we need another bunch of utility methods, to run `Tesseract` and to find bounding boxes for a given text. See the code for `ocr.py` [here](link).
+
+When we have this, we update the `click_object`. We move the grid-related logic to a separate method, add a similar one with 
+the OCR-related logic, and update the main action method as this:
+
+```python
+    @action
+    def click_object(self, description: str, type: str) -> None:
+        """Click on an object on the screen
+
+        Args:
+            description (str): The description of the object including its general location, for example
+                "a round dark blue icon with the text 'Home' in the top-right of the image", please be a generic as possible
+            type (str): Type of click, can be 'single' for a single click or
+                'double' for a double click. If you need to launch an application from the desktop choose 'double'
+        """
+
+        if type != "single" and type != "double":
+            raise ValueError("type must be'single' or 'double'")
+
+        coords = self._ocr_based_click(description, type)
+        if coords is None:
+            coords = self._grid_based_click(description, type)
+        
+        click_x = coords["x"]
+        click_y = coords["y"]
+
+        self.task.post_message(
+            role="assistant",
+            msg=f"Clicking coordinates {click_x}, {click_y}",
+            thread="debug",
+        )
+        self._click_coords(x=click_x, y=click_y, type=type)
+        return
+```
+
+Grab the complete code for `tool.py`[here](link).
+
+If you look closely on the debug channel now, you'll see that our agent tries to use OCR whenever it makes sense,
+and if this operation succeeds, it goes on with the next iteration; if it doesn't succeed, it falls back to the grid approach.
+
 
 
 
