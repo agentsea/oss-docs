@@ -104,6 +104,79 @@ From the code point of view, we'll do the following:
 * We'll then update the `Agent` class to use the `SemanticDesktop` alongside the actual `Desktop`: we want the actions to be taken from and by `SemanticDesktop` and translated to the low-level `Desktop` operations when needed; we also want to keep using the screenshoting and mouse-catching abilities from `Desktop`;
 * After that, we'll introduce a new action to the `SemanticDesktop`: `click_object`.
 
+## SemanticDesktop
+
+*Note*: You can find the code for this step of the tutorial [here](https://github.com/agentsea/surfhamster/tree/1fc5562be20c2731974222405160aef2f4168717).
+
+First, we need to refine our `SemanticDesktop`. It will interit from `Tool`, which would allow us pass it to the MLLM.
+
+```
+code for tool.py
+```
+
+The most interesting part of this class is that we add a new method, `click_object`:
+
+```python
+    @action
+    def click_object(self, description: str, type: str) -> None:
+        """Click on an object on the screen
+
+        Args:
+            description (str): The description of the object including its general location, for example
+                "a round dark blue icon with the text 'Home' in the top-right of the image", please be a generic as possible
+            type (str): Type of click, can be 'single' for a single click or
+                'double' for a double click. If you need to launch an application from the desktop choose 'double'
+        """
+        info = self.desktop.info()
+        screen_size = info["screen_size"]
+        self._click_coords(screen_size["x"] // 2, screen_size["y"] // 2, "single")
+```
+
+As you can see, right now it is quite non-intelligent: it simply returns the coordinated at middle of the screen. Don't worry, we'll work on it later!
+
+As we now have this class, we can update the `Agent` class too:
+
+```
+code for agent.py
+```
+
+Note that we replace some of the usages of the `Desktop` device by the `SemanticDesktop` device, but not all of them. The best way to explain it is that we get observations from the `Desktop` (a screenshot and mouse coordinates), but we run the actions of and by the `SemanticDesktop`. We also remove some actions we don't need our agent to know:
+
+```python
+        tools = semdesk.json_schema(
+            exclude_names=[
+                "move_mouse",
+                "click",
+                "drag_mouse",
+                "mouse_coordinates",
+                "take_screenshot",
+                "open_url",
+                "double_click",
+            ]
+        )
+```
+
+If you run the agent now, you'll notice in the console logs, that the schema (the available actions) is changed, and that the agent can now return a new kind of actions:
+
+```python
+{
+  "observation": "The cursor is near the address bar and the search tab at the top left of the Google homepage.",
+  "reason": "To search for a cool cat image, the next step is to type the search query into the Google search box located in the center of the screen.",
+  "action": {
+    "name": "click_object",
+    "parameters": {
+      "description": "the Google search box in the center of the screen",
+      "type": "single"
+    }
+  }
+}
+```
+
+The only problem now is that the implementation of this `click_object` function is pretty dumb. Let's fix this.
+
+
+
+
 
 
 
