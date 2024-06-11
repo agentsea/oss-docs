@@ -122,13 +122,13 @@ to be taken from and by `SemanticDesktop` and translated to the low-level `Deskt
 we also want to keep using the screenshoting and mouse-catching abilities from `Desktop`;
 * After that, we'll introduce a new action to the `SemanticDesktop`: `click_object`.
 
-## SemanticDesktop
+## Adding SemanticDesktop
 
 *Note*: You can find the code for this step of the tutorial 
 [here](https://github.com/agentsea/surfhamster/tree/1fc5562be20c2731974222405160aef2f4168717).
 
 First, we need to refine our `SemanticDesktop`. It will interit from `Tool`, which would allow us pass it to the MLLM.
-See the full code for `tool.py` [here](link).
+See the full code for `tool.py` [here](https://github.com/agentsea/surfhamster/blob/1fc5562be20c2731974222405160aef2f4168717/surfhamster/tool.py).
 
 The most interesting part of this class is that we add a new method, `click_object`:
 
@@ -191,10 +191,11 @@ is changed, and that the agent can now return a new kind of actions:
 
 The only problem now is that the implementation of this `click_object` function is pretty dumb. Let's fix this.
 
-## Adding the Grid
+## Adding Grid
 
 *Note*: You can find the code for this step of the tutorial 
-[here](https://github.com/agentsea/surfhamster/tree/4a80d5f1fab16d61a0669ffca1507f6768c2b8dd).
+[here](https://github.com/agentsea/surfhamster/tree/4a80d5f1fab16d61a0669ffca1507f6768c2b8dd). 
+You'll need to add the fonts that you can see in the repository.
 
 There are many ways to assist an MLLM in picking correctly the exact location of the object on a screenshot. 
 None of them is perfect (to the best of our knowledge at the moment of writing this tutorial), 
@@ -203,7 +204,7 @@ but combining a few in one agent can guarantee pretty high accuracy. Let's start
 We call this approach "The Grid". The idea is to put a bunch of dots with numbers in the corners of the cells on 
 the NxN grid on a screen. Honestly, it's easier to show than to explain:
 
-**IMAGE WITH GRID**
+![Google results page covered with grid](images/grid_example.png)
 
 If we desaturate the original screenshot and put this grid on top, we may ask an MLLM which dot is the closest one 
 to the place which the agent wants to click (for example, a search bar or a button). In order to do that, 
@@ -213,7 +214,7 @@ We then simply convert the number that an MLLM returns back to the coordinates o
 
 First, we need to define a bunch of utility functions to generate this grid, merge it with the main image, 
 and also convert images to and from b64 because it's the only format of the image that gpt-4o accepts. See the code
-for `image.py` [here](link).
+for `image.py` [here](https://github.com/agentsea/surfhamster/blob/4a80d5f1fab16d61a0669ffca1507f6768c2b8dd/surfhamster/image.py).
 
 Now, we can seriously update the `click_object` function:
 
@@ -354,6 +355,8 @@ It looks like a lot is going on here, but if you look closely, we just do a few 
 * We convert the number back to screen coordinates.
 * Along the way, we record the stuff in the "debug" channel of our agent, so that you can see what exactly is going on, in the UI.
 
+You can find full code for `tool.py` [here](https://github.com/agentsea/surfhamster/blob/4a80d5f1fab16d61a0669ffca1507f6768c2b8dd/surfhamster/tool.py).
+
 When you run the agent now, you can see the images with grid that it generates, in the debug tab. 
 You can see that MLLM is picking the correct number pretty reliably. This method is obviously more intelligent 
 than picking the middle of the screen. However, there is a good change to miss the correct spot because the element 
@@ -377,7 +380,7 @@ fall back to the Grid. But if we can find the text, it gives us two benefits:
 you get the result in a fraction of a second.
 * The bounding box is very accurate: we can safely click in the middle of the coordinates and be sure that we hit the oject.
 
-**IMAGE WITH A BOUNDING BOX**
+![Google search page with a button highlighted](images/ocr_example.png)
 
 First of all, install `pytesseract`:
 
@@ -385,7 +388,7 @@ First of all, install `pytesseract`:
 poetry add pytesseract
 ```
 
-Now, we need another bunch of utility methods, to run `Tesseract` and to find bounding boxes for a given text. See the code for `ocr.py` [here](link).
+Now, we need another bunch of utility methods, to run `Tesseract` and to find bounding boxes for a given text. See the code for `ocr.py` [here](https://github.com/agentsea/surfhamster/blob/167e73de555986eec76bc25b57c2e433b37ee92f/surfhamster/ocr.py).
 
 When we have this, we update the `click_object`. We move the grid-related logic to a separate method, add a similar one with 
 the OCR-related logic, and update the main action method as this:
@@ -421,7 +424,7 @@ the OCR-related logic, and update the main action method as this:
         return
 ```
 
-Grab the complete code for `tool.py`[here](link).
+Grab the complete code for the final version of `tool.py`[here](https://github.com/agentsea/surfhamster/blob/167e73de555986eec76bc25b57c2e433b37ee92f/surfhamster/tool.py).
 
 If you look closely on the debug channel now, you'll see that our agent tries to use OCR whenever it makes sense,
 and if this operation succeeds, it goes on with the next iteration; if it doesn't succeed, it falls back to the grid approach.
