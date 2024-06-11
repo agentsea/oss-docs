@@ -1,0 +1,170 @@
+---
+title: How-To: a Simple Weather Agent
+---
+
+In this tutorial, we'll explore how to create and use a simple `WeatherLogger` agent. This agent can check the current weather and log the info to a human-readable format. 
+
+You can play around with this example at [Jupyter notebook](https://github.com/agentsea/toolfuse/blob/main/examples/weather/demo.ipynb).
+
+## `WeatherLogger` class
+
+This is a straightforward implementation of the `Tool` class, designed to perform two primary operations: checking the weather (observation) and logging the information (action). 
+
+```python
+import os
+from dotenv import load_dotenv
+import requests
+from toolfuse import Tool, action, observation
+
+class WeatherLogger(Tool):
+    def __init__(self):
+        super().__init__()
+        self.log_file = "weather.txt"
+
+    @action
+    def log(self, message: str):
+        """Logs a message to the log file."""
+        with open(self.log_file, "a") as file:
+            file.write("***\n" + message + "\n")
+
+    @observation
+    def weather(self, location: str) -> str:
+        """Checks the current weather from the internet using wttr.in."""
+        weather_api_url = f"http://wttr.in/{location}?format=%l:+%C+%t"
+        try:
+            response = requests.get(weather_api_url)
+            return response.text
+        except requests.exceptions.HTTPError as err:
+            return f"HTTP Error: {err}"
+        except requests.exceptions.RequestException as e:
+            return f"Error: Could not retrieve weather data. {e}"
+
+# Example usage
+tool = WeatherLogger()
+location = "Paris"
+weather_info = tool.weather(location)
+print(f"Weather in {location}: {weather_info}")
+tool.log(f"Weather in {location}: {weather_info}")
+```
+
+Pretty trivial, as you can see.
+
+## Communication with LLM
+
+The interesting part though is not really the ability to use weather API and write to files, but to use this class to give an LLM with a new skill. All we have to do is get the schema of the tool actions and observations and give them to our LLM like this: 
+
+```python
+schema = tool.json_schema()
+```
+
+```
+[{'name': 'log',
+  'parameters': {'type': 'object',
+   'properties': {'message': {'type': 'string'}},
+   'required': ['message']},
+  'description': 'Logs a message to the log file.'},
+ {'name': 'weather',
+  'parameters': {'type': 'object',
+   'properties': {'location': {'type': 'string'}},
+   'required': ['location']},
+  'description': 'Checks the current weather from the internet using wttr.in.'}]
+```
+
+As you can see, the `schema` object lists all actions we have with their parameters and descriptions. 
+
+Now that we have this info, we can implement a simple scenario:
+
+* We inform the AI about the tools (in our case, `weather` and `log`) that it can use.
+* We give it a task to check and describe weather in a given city.
+
+First things first: We start with a prompt. As you can see, it contains the schema of the tool and the instructions on how to respond.
+
+```python
+system_message = """You are a helpful poetical AI. 
+You can check the weather, write a short poem to describe it and log all of that. 
+You have the following tools available to you: 
+
+{schema}
+
+When you respond, always give a JSON with a correct tool called. For example:
+
+{"tool": "weather", "parameters": {"location": "Thessaloniki"}}
+
+{"tool": "log", "parameters": {"message": "The weather is nice."}}
+
+Only answer with JSON. Avoid wrapping it in quotes.
+"""
+
+task = "Check the weather in Paris, describe it, and log the result."
+```
+
+Now, we add a couple of helper functions to make the process of interacting with the AI easier.
+
+```python
+# Helper functions
+def ask_ai(messages):
+    response = client.chat.completions.create(
+        model="gpt-4-1106-preview",
+        messages=messages,
+        max_tokens=1000
+    )
+    print(f"Full response: {response}")
+    assistant_reply = response.choices[0].message.content
+    print(f"Actual reply: {assistant_reply}")
+    return assistant_reply
+
+def execute_step(reply, tool):
+    jdict = json.loads(reply)
+    print(f"Parsed JSON: {jdict}")
+    action = tool.find_action(jdict['tool'])
+    print(f"Found action: {action.name}")
+    result = tool.use(action, **jdict['parameters'])
+    print(f"Result: {result}")
+    return result
+```
+
+The entire process after this looks as follows:
+
+* Update the list of messages
+* Ask the AI for the next step
+* Execute the next step
+* Repeat
+* ...
+* Profit!
+
+```python
+# Initial messages for the AI
+messages = []
+messages.append({"role": "system", "content": system_message})
+messages.append({"role": "user", "content": task})
+
+# First loop: Suggest checking the weather
+reply = ask_ai(messages)
+messages.append({"role": "assistant", "content": reply})
+result = execute_step(reply, tool)
+messages.append({"role": "user", "content": result})
+
+# Second loop: Get the weather, create a poem, and log it
+reply = ask_ai(messages)
+messages.append({"role": "assistant", "content": reply})
+result = execute_step(reply, tool)
+```
+
+And here we are, with a beautiful poem about the weather in Paris inside the `weather.txt`:
+
+```
+***
+Paris: Partly cloudy +11°C
+***
+A sky of artists' delight, in Paris so fair,
+Partly clad in cloudy attire, with a cool, gentle air,
+Eleven degrees holds the day in its embrace,
+While sun and clouds in a dainty dance do chase.
+```
+
+## What's next?
+
+* Play around with this example at [Jupyter notebook](https://github.com/agentsea/toolfuse/blob/main/examples/weather/demo.ipynb).
+* Look at more realistic example of a [SeleniumBrowser tool implementation](https://github.com/agentsea/toolfuse/blob/main/examples/selenium/tool.py).
+* Dive into an elaborated implentation of the [Desktop tool](https://github.com/agentsea/agentdesk/blob/main/agentdesk/tool.py) from the [AgentDesk](https://github.com/agentsea/agentdesk) project, which adds the `Tool` sause on top of the [Agentd](https://github.com/agentsea/agentd)-powered VMs.
+

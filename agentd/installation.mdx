@@ -1,0 +1,98 @@
+---
+title: Installation Guide
+---
+
+`agentd` is currently tested on the Ubuntu 22.04 cloud image.
+
+## Prerequisites
+
+We recommend using one of our base vms which are already configured.
+
+- [Qemu](https://www.qemu.org/download/) -- if you want to run the desktop locally
+- [GCP CLI](https://cloud.google.com/sdk/docs/install) or [AWS CLI](https://aws.amazon.com/cli/) -- if you want it to run remotely
+
+## Qemu
+
+For Qemu, download the qcow2 image
+
+```bash
+wget https://storage.googleapis.com/agentsea-vms/jammy/latest/agentd-jammy.qcow2
+```
+
+To use the image, make a [cloud-init](https://cloud-init.io/) iso with our user-data. See this [tutorial](https://cloudinit.readthedocs.io/en/latest/reference/datasources/nocloud.html), below is how it looks on MacOS
+
+```bash
+xorriso -as mkisofs -o cidata.iso -V "cidata" -J -r -iso-level 3 meta/
+```
+
+Then the image can be ran with Qemu
+
+```bash
+qemu-system-x86_64 -nographic -hda ./agentd-jammy.qcow2 \
+-m 4G -smp 2 -netdev user,id=vmnet,hostfwd=tcp::6080-:6080,hostfwd=tcp::8000-:8000,hostfwd=tcp::2222-:22 \
+-device e1000,netdev=vmnet -cdrom cidata.iso
+```
+
+Once running, the `agentd` service can be accessed with:
+
+```bash
+curl localhost:8000/health
+```   
+
+To login to the machine:
+
+```bash
+ssh -p 2222 agentsea@localhost
+```   
+
+## AWS
+
+For AWS, use public AMI `ami-01a893c1530453073`   
+
+Create a cloud-init script with your ssh key
+
+```yaml
+#cloud-config
+
+users:
+  - name: agentsea
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    groups: sudo
+    ssh_authorized_keys:
+      - your-ssh-public-key
+
+package_upgrade: true
+```
+
+```bash
+aws ec2 run-instances \
+    --image-id ami-01a893c1530453073 \
+    --count 1 \
+    --instance-type t2.micro \
+    --key-name $KEY_NAME \
+    --security-group-ids $SG_NAME \
+    --subnet-id $SUBNET_NAME \
+    --user-data file://path/to/cloud-init-config.yaml
+```
+
+## GCE
+
+For GCE, use the public image `ubuntu-22-04-20240208044623`
+
+```bash
+gcloud compute instances create $NAME \
+    --machine-type "n1-standard-1" \
+    --image "ubuntu-22-04-20240208044623" \
+    --image-project $PROJECT_ID \
+    --zone $ZONE \
+    --metadata ssh-keys="agentsea:$(cat path/to/your/public/ssh/key.pub)"
+```
+
+## Custom
+
+If you want to install on a fresh Ubuntu VM, use the a [cloud images base](https://cloud-images.ubuntu.com/jammy/current/) qcow2 image.
+
+```bash
+curl -sSL https://raw.githubusercontent.com/agentsea/agentd/main/remote_install.sh | sudo bash
+```
+

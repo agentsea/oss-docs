@@ -1,0 +1,80 @@
+---
+title: Introduction
+---
+
+`ToolFuse` is a library for building tools for LLM-based agents. It provides a simple interface for defining tools and their actions and observations.
+
+## Motivation
+
+AI agent developers know that one of the biggest challenges in building agents is defining the tools they can use. Tools do specific tasks and interact with their environment. They can fetch data, navigate a UI, summarize text, review an image, type, click buttons, talk to an API, write to files, etc.
+
+The challenge breaks down into multiple smaller problems:
+
+* How to let the model know what tools it can use?
+* How does the LLM know what the tool can do?
+* How do we enforce the rules around the actions?
+* How to wield that tool based on the model's reasoning and response?
+
+`ToolFuse` focuses on all of these problems and makes it easy that ever to use tools. 
+
+## Installation
+
+```
+pip install toolfuse
+```
+
+## `ToolFuse` in action
+
+Let's take a look at a super simple example. Let's say we have a class `Desktop` that lets your agent interact with that desktop and get information from the environment like the mouse postion, as well as take actions like moving the mouse. The class gets defined as follows:
+
+```python
+class Desktop(Tool):
+    @observation
+    def get_mouse_position(self):
+        """Get mouse position on a screen"""
+        # Implement the logic to get the current mouse position
+        return x, y
+
+    @action
+    def move_mouse(self, x: int, y: int):
+        """Move mouse to the given coordinates"""
+        # Implement the logic to move the mouse to the given coordinates
+        pass
+    # Implement other actions and observations as needed
+```
+
+When we create an instance of the `Desktop` class, we can use it with an agent, we can request a schema of the tool actions and observations:
+
+```python
+tool = Desktop()
+schema = tool.json_schema()
+```
+
+```
+[{'name': 'get_mouse_position',
+  'parameters': {'type': 'object', 
+   'properties': {}, 
+   'required': []},
+  'description': 'Get mouse position on a screen.'},
+ {'name': 'move_mouse',
+  'parameters': {'type': 'object',
+   'properties': {'x': {'type': 'integer'}, 'y': {'type': 'integer'}},
+   'required': ['x', 'y']},
+  'description': 'Move mouse to the given coordinates.'}]
+```
+
+Now, if we get a JSON that corresponds to this schema, we can feed it to a tool and ask it to perform an action.
+
+```python
+jdict = {"tool": "move_mouse", "parameters": {"x": 100, "y": 100}}
+action = tool.find_action(jdict['tool'])
+print(f"Found action: {action.name}")
+result = tool.use(action, **jdict['parameters'])
+```
+
+## What's next?
+
+* Look at the detailed example of using a Tool with an LLM at [Weather Agent](./weather_agent.md) tutorial.
+
+
+

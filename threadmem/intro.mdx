@@ -1,0 +1,63 @@
+---
+title: Introduction
+---
+
+`ThreadMem` is a library for building and manipulating persistent chat threads. It makes it easier to communicate with LLMs, but not limited to that.
+
+For example, you can create a Thread in the code and add messages to it (like, a message from "system", a message from "user",  a message from "assistant", from "user" again, etc). The threads get written to a DB (SQLite/Postgres), so you can return to the chat at any time and pick up where you left off.
+
+## Installation
+
+```
+pip install threadmem
+```
+
+## Basic Example
+
+By default, the threads you create are stored in a local SQLite database, located at `./data/threads.db`.
+
+```python
+owner_id = "random123"
+public = True
+name = "My thread"
+metadata = {"purpose": "demo"}
+
+thread = RoleThread(owner_id=owner_id, public=public, name=name, metadata=metadata)
+
+role_user = "user"
+role_assistant = "assistant"
+
+thread.post(role=role_user, msg="Hey there!")
+thread.post(role=role_assistant, msg="Hello!")
+thread.post(role=role_user, msg="What do you see on this picture?", images=["https://upload.wikimedia.org/wikipedia/commons/c/c7/Tabby_cat_with_blue_eyes-3336579.jpg"])
+thread.post(role=role_assistant, msg="I see a cat with blue eyes.")
+```
+
+As mentioned above, the library is designed for making it easier to communicate with LLMs, so we support a `to_oai` method for exporting the thread to OpenAI format.
+
+```python
+json_load = thread.to_oai()
+```
+
+## Using PostgreSQL
+
+To use PostgreSQL as a database backend, you should set up a few environment variables.
+
+```
+export DB_TYPE=postgres
+export DB_USER=<username>
+export DB_PASS=<password>
+export DB_HOST=<host:port>
+export DB_NAME=<database>
+```
+
+## Remote Connection
+
+It's possible to connect to a remote server with `ThreadMem`. To do that, you pass the remote server URL to the thread constructor:
+
+```python
+thread = RoleThread(owner_id=owner_id, 
+                    public=public, name=name, metadata=metadata, 
+                    remote="https://agentsea.com/threadmem")
+```
+

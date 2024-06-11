@@ -1,0 +1,69 @@
+---
+title: Introduction
+---
+
+AgentDesk provides full-featured Desktop environments which can be programatically controlled by AI agents.
+
+## Features
+
+* Built on [agentd](https://github.com/agentsea/agentd) – a runtime daemon which exposes a REST API for interacting with the desktop.
+
+* Implements the [ToolsV1 protocol](https://github.com/agentsea/toolfuse) – a protocol for defining Tools for LLM-based Agents.
+
+* Provides a CLI and a Python library.
+
+* The Desktops can be run locally or in the cloud.
+
+## Motivation
+
+Why do we want this?  Simple.  APIs are not always available and they can be incredibly expensive to use. Agents that can use UIs and GUIs with ease have a massive advantage operating mobile phones, desktops and SaaS applications. They can work with it just like a human.  GUI navigation makes any accessible and programmable to an agent, which offers tremendous potential to gather information, automat complex, open ended tasks and control your desktop. Almost all the work in this area is currently focues on helping agents to work in browsers, but many apps are not available on the web.
+
+That's why we created AgentDesk. It allows you to run VMs locally and in the cloud, and to control them using Python SDK and CLI. This gives you a tremendously solid foundation for advanced GUI controlling agents.
+
+Check out an example of a complex GUI-based agent [here](https://github.com/agentsea/surfdino). Read on to learn how to use AgentDesk.
+
+## Installation
+
+`pip install agentdesk`
+
+If you run local VMs, you need [qemu](https://www.qemu.org/).
+
+You also need Docker Desktop to run the containers with Desktop GUI. 
+
+## Quick Start: local run
+
+```python
+from agentdesk import Desktop
+
+# Create a local VM
+desktop = Desktop.local()
+
+# Launch the UI for it
+desktop.view(background=True)
+
+# Open a browser to Google
+desktop.open_url("https://google.com")
+
+# Take actions on the desktop
+desktop.move_mouse(500, 500)
+desktop.click()
+img = desktop.take_screenshot()
+```
+
+## Running in GCP and in AWS
+
+```python
+desktop = Desktop.gce()
+```
+
+```python
+desktop = Desktop.aws()
+```
+
+## What's next?
+
+* Look at the [Simple example](demo.md) for the introduction to using AgentDesk.
+* Look at the [Advanced example](note.md) for a deep dive into connecting AgentDesk and LLM.
+* Visit our [examples](https://github.com/agentsea/agentdesk/tree/main/agentdesk/examples) to see more.
+* Visit [our API reference](https://agentsea.github.io/agentdesk/).
+* To see a more complex use-case, check out [SurfDino](https://github.com/agentsea/surfdino) – our GUI surfing agent.

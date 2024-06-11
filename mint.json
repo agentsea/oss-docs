@@ -21,57 +21,56 @@
   "topbarLinks": [
     {
       "name": "Support",
-      "url": "mailto:hi@mintlify.com"
+      "url": "mailto:github@kentauros.ai"
     }
   ],
   "topbarCtaButton": {
-    "name": "Dashboard",
-    "url": "https://dashboard.mintlify.com"
+    "name": "GitHub",
+    "url": "https://github.com/agentsea"
   },
-  "tabs": [
-    {
-      "name": "API Reference",
-      "url": "api-reference"
-    }
-  ],
   "anchors": [
     {
-      "name": "Community",
-      "icon": "slack",
-      "url": "https://mintlify.com/community"
-    },
-    {
-      "name": "Blog",
-      "icon": "newspaper",
-      "url": "https://mintlify.com/blog"
+      "name": "Website",
+      "icon": "globe-pointer",
+      "url": "https://agentsea.ai/"
     }
   ],
   "navigation": [
     {
       "group": "Get Started",
-      "pages": ["introduction", "quickstart", "development"]
+      "pages": ["introduction", "quickstart"]
     },
     {
-      "group": "Essentials",
+      "group": "AgentDesk",
       "pages": [
-        "essentials/markdown",
-        "essentials/code",
-        "essentials/images",
-        "essentials/settings",
-        "essentials/navigation",
-        "essentials/reusable-snippets"
+        "agentdesk/intro",
+        "agentdesk/cli",
+        "agentdesk/demo",
+        "agentdesk/note",
+        "agentdesk/api"
       ]
     },
     {
-      "group": "API Documentation",
-      "pages": ["api-reference/introduction"]
+      "group": "AgentD",
+      "pages": [
+        "agentd/intro",
+        "agentd/installation",
+        "agentd/api"
+      ]
     },
     {
-      "group": "Endpoint Examples",
+      "group": "ToolFuse",
       "pages": [
-        "api-reference/endpoint/get",
-        "api-reference/endpoint/create",
-        "api-reference/endpoint/delete"
+        "toolfuse/intro",
+        "toolfuse/weather_agent",
+        "toolfuse/api"
+      ]
+    },
+    {
+      "group": "ThreadMem",
+      "pages": [
+        "threadmem/intro",
+        "threadmem/api"
       ]
     }
   ],
