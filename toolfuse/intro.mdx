@@ -1,12 +1,16 @@
 ---
 title: Introduction
+icon: hand-wave
 ---
 
-`ToolFuse` is a library for building tools for LLM-based agents. It provides a simple interface for defining tools and their actions and observations.
+`ToolFuse` is a library for building tools for LLM-based agents. 
+It provides a simple interface for defining tools and their actions and observations.
 
 ## Motivation
 
-AI agent developers know that one of the biggest challenges in building agents is defining the tools they can use. Tools do specific tasks and interact with their environment. They can fetch data, navigate a UI, summarize text, review an image, type, click buttons, talk to an API, write to files, etc.
+AI agent developers know that one of the biggest challenges in building agents is defining the tools they can use. 
+Tools do specific tasks and interact with their environment. They can fetch data, navigate a UI, summarize text, 
+review an image, type, click buttons, talk to an API, write to files, etc.
 
 The challenge breaks down into multiple smaller problems:
 
@@ -25,7 +29,9 @@ pip install toolfuse
 
 ## `ToolFuse` in action
 
-Let's take a look at a super simple example. Let's say we have a class `Desktop` that lets your agent interact with that desktop and get information from the environment like the mouse postion, as well as take actions like moving the mouse. The class gets defined as follows:
+Let's take a look at a super simple example. Let's say we have a class `Desktop` that lets your agent 
+interact with that desktop and get information from the environment like the mouse postion, as well as 
+take actions like moving the mouse. The class gets defined as follows:
 
 ```python
 class Desktop(Tool):

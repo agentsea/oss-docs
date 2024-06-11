@@ -2,13 +2,16 @@
 title: CLI Documentation
 ---
 
-The AgentDesk CLI provides a command-line interface to manage desktop environments programmatically. Here are the primary switches and their usage:
+The AgentDesk CLI provides a command-line interface to manage desktop environments programmatically. 
+Here are the primary switches and their usage:
 
 ## Commands
 
 ### `create`
 Creates a new desktop environment.
+
 - **Options**:
+
   - `--name`: The name of the desktop to create. Defaults to a generated name.
   - `--provider`: The provider type for the desktop. Options are 'ec2', 'gce', and 'qemu'. Default is 'qemu'.
   - `--image`: The image to use for the desktop. Defaults to Ubuntu Jammy.
@@ -19,38 +22,58 @@ Creates a new desktop environment.
   - `--ssh-key`: The SSH key for the desktop. Optional.
 
 ### `get`
+
 Retrieves information about one or all desktops.
+
 - **Options**:
+
   - `--name`: The name of the desktop to retrieve. If not provided, all desktops will be listed.
   - `--provider`: The provider type for the desktop. Optional.
 
 ### `delete`
+
 Deletes a specified desktop.
+
 - **Arguments**:
+
   - `name`: The name of the desktop to delete.
 
 ### `view`
+
 Opens a browser view of the specified desktop.
+
 - **Arguments**:
+
   - `name`: The name of the desktop to view.
 
 ### `refresh`
+
 Refreshes the provider information.
+
 - **Arguments**:
+
   - `provider`: The provider type for the desktop.
 
 ### `stop`
+
 Stops the specified desktop.
+
 - **Arguments**:
+
   - `name`: The name of the desktop to stop.
 
 ### `start`
+
 Starts the specified desktop.
+
 Doesn't apply for local desktops: use `create` to start a local desktop.
+
 - **Arguments**:
+
   - `name`: The name of the desktop to start.
 
 ### `clear_cache`
 Clears the cache directory.
 
-For more detailed information on each command, including options and examples, refer to the CLI help by running `agentdesk --help` or `agentdesk <command> --help`.
+For more detailed information on each command, including options and examples, 
+refer to the CLI help by running `agentdesk --help` or `agentdesk <command> --help`.

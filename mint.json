@@ -47,7 +47,8 @@
         "agentdesk/cli",
         "agentdesk/demo",
         "agentdesk/note",
-        "agentdesk/api"
+        "agentdesk/api",
+        "agentdesk/repo"
       ]
     },
     {
@@ -55,7 +56,8 @@
       "pages": [
         "agentd/intro",
         "agentd/installation",
-        "agentd/api"
+        "agentd/api",
+        "agentd/repo"
       ]
     },
     {
@@ -63,14 +65,16 @@
       "pages": [
         "toolfuse/intro",
         "toolfuse/weather_agent",
-        "toolfuse/api"
+        "toolfuse/api",
+        "toolfuse/repo"
       ]
     },
     {
       "group": "ThreadMem",
       "pages": [
         "threadmem/intro",
-        "threadmem/api"
+        "threadmem/api",
+        "threadmem/repo"
       ]
     }
   ],
