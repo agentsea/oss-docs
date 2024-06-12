@@ -54,11 +54,11 @@ congratulations: you just created your first agent!
 Let's briefly look inside the repo. There are a bunch of files there, but the most critical files are the following:
 
 * `agent.yaml` is a configuration file; it contains a few self-explanatory sections: 
-  * you will need to change the docker image repo later when you are ready to publish it; 
+  * you will need to change the docker image repo later when you're ready to publish it; 
   * you may also want to change the icon; 
   * by default, your agent will run locally; 
   * this agent is designed to work with a “desktop” device as are the other GUI-driven agents that we build;
-* `server.py` is just an utility class used to host the server with the agent process;
+* `server.py` is just a utility class used to host the server with the agent process;
 * `agent.py` is the main class that implements the logic of the agent: 
   * at the beginning of the task execution we explain to the MLLM/LLM what this agent is expected to do; 
   * then we enter the loop: 
@@ -75,7 +75,7 @@ that allows it to control the VM (in the cloud or a local one) via a mouse and a
 
 When the agent works to solve a given task, it uses the device. The device implements 
 the `Tool` interface and therefore has a schema of actions that the agent can take at any give time. We get this schema in JSON format, 
-ask an MLLM/LLM to return the next action that format, and then on each step of solving a task, 
+ask an MLLM/LLM to return the next action in that format, and then on each step of solving a task, 
 we have an action that can be passed back to the device to be executed. 
 
 For example, the action returned by MLLM/LLM, might look like this:
@@ -93,9 +93,9 @@ For example, the action returned by MLLM/LLM, might look like this:
 }
 ```
 
-When this object gets returned to device, the device can execute it: in this case, type the text "cool cat images" using the keyboard.
+When this object gets returned to a device, the device can execute it: in this case, type the text "cool cat images" using the keyboard.
 
-The actions include the low-level operations with a mouse and a keyboard, like moving mouse, clicking on coordinates, typing letters. They also include taking the screenshot and getting the current mouse coordinates, which helps an MLLM to choose the next action towards the task completion.
+The actions include the low-level operations of a mouse and a keyboard, like moving the mouse, clicking on coordinates, typing letters, and sending key commands. They also include taking the screenshot and getting the current mouse coordinates, which helps an MLLM to choose the next action towards the task completion.
 
 The agent we just created works using these primitives: typing text and clicking the mouse. Cool, right? However, there is one little problem.
 
@@ -104,7 +104,7 @@ The agent we just created works using these primitives: typing text and clicking
 And this is a big problem: at the time of this tutorial (June 2024, "gpt-4o" was released not so long ago), 
 all frontier MLLMs are horrible at identifying coordinates of the object on a screenshot. They can reason quite well about what should be clicked or typed to achieve their goal, but they can't return correct coordinates for that value.
 
-So it's time to make this agent better with some additional tricks.  Our gaol is to help them  **convert an idea on what should be 
+So it's time to make this agent better with some additional tricks.  Our goal is to help them  **convert an idea on what should be 
 clicked into actual, correct screen coordinates**. To do that, we need to expand the toolset of our device and add a semantic 
 layer to it, so that instead of "click on (400, 350)" our agent will return something like to "click on the big 'Search' button at the bottom of the screen".
 
@@ -142,9 +142,9 @@ The most interesting part of this class is that we add a new method, `click_obje
         self._click_coords(screen_size["x"] // 2, screen_size["y"] // 2, "single")
 ```
 
-As you can see, it is not so smart at the moment: it simply returns the coordinates at middle of the screen. Don't worry, we'll work on it later!
+As you can see, it is not so smart at the moment: it simply returns the coordinates in middle of the screen. Don't worry, we'll work on it later!
 
-As we now have this class, we can update the `Agent` class too. See the ful code for `agent.py` [here](link).
+As we now have this class, we can update the `Agent` class too. See the full code for `agent.py` [here](link).
 
 Note that we replace some of the usages of the `Desktop` device by the `SemanticDesktop` 
 device, but not all of them. The best way to explain it is that we get observations from the `Desktop` (a screenshot and mouse coordinates), but we run the actions of and by the `SemanticDesktop`. 
@@ -190,7 +190,7 @@ The only problem now is that the implementation of this `click_object` function 
 You'll need to add the fonts that you can see in the repository.
 
 There are many ways to assist an MLLM in picking  the right location of the object on a screenshot. 
-None of them are perfect (to the best of our knowledge at the moment of writing this tutorial), but combining a few in one agent can guarantee pretty high accuracy. Let's start with something simple.
+None of them are perfect (to the best of our knowledge at the moment of writing this tutorial), but combining a few in one agent can get you pretty high accuracy. Let's start with something simple.
 
 We call this approach "The Grid". The idea is to put a bunch of dots with numbers in the corners of the cells on the NxN grid on a screen. 
 
