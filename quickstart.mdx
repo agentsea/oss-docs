@@ -26,8 +26,10 @@ surfkit find
 
 Create a new agent
 
+Replace "/my/path/" with your local path
+
 ```
-surfkit create agent -t pbarker/SurfPizza -n agent01
+surfkit create agent -t /my/path/SurfPizza -n agent01
 ```
 
 List running agents
@@ -42,14 +44,14 @@ surfkit list agents
 To run the agent on Kubernetes all you need is a working kubeconfig
 
 ```
-surfkit create agent -t pbarker/SurfPizza --runtime kube
+surfkit create agent -t /my/path/SurfPizza --runtime kube
 ```
 
 </Accordion>
 <Accordion icon="key" title="Automatically add local API keys">
 Agents will prompt you for any keys they need. In order to skip this and automatically add local keys
 ```
-surfkit create agent -t pbarker/SurfPizza --local-keys
+surfkit create agent -t /my/path/SurfPizza --local-keys
 ```
 
 </Accordion>
