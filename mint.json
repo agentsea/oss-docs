@@ -46,6 +46,20 @@
       ]
     },
     {
+      "group": "SurfKit",
+      "pages": [
+        "surfkit/intro",
+        "surfkit/repo"
+      ]
+    },
+    {
+      "group": "Taskara",
+      "pages": [
+        "taskara/intro",
+        "taskara/repo"
+      ]
+    },
+    {
       "group": "AgentDesk",
       "pages": [
         "agentdesk/intro",

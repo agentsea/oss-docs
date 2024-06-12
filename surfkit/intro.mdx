@@ -1,0 +1,36 @@
+---
+title: (WIP) Introduction
+icon: hand-wave
+---
+
+`SurfKit` is an orchestartor for building and launching agents locally, in a docker container, 
+or in the cloud. Think of it as k8s for agents.
+
+There are several key concepts `SurfKit` operates with:
+
+* **Device** is an entity that implements the `Device` protocol from the `DeviceBay` and allows manipulating this device 
+via user-defined observations and actions. Right now, we support one kind of devices with the UI, which is a `Desktop`: 
+a VM which can be managed via mouse and keyboard programmatically. It can run locally (via QEMU), in GCP or in AWS. 
+Other devices can be used in the agent code as libraries. We plan to implement more types of devices soon.
+* **Tracker** is an entity that takes care of assigning and observing the tasks amoung the agents. Trackers are run in Docker or in K8s.
+* **Type** is the type of the Agent, for example, SurfPizza, SurfSlicer, or SurfMonsta. The types can be defined either in Hub 
+(more on that later), or in the local repository.
+* **Agent** is an entity of one of the types. That's the process that is going to solve the tasks for you, that can be executed as
+a process (super handy during the development), in a Docker container or in K8s.
+* **Task** is a unit of an Agent operation that has a description and a device to deal with. A task may be as simple as 
+"Find me a an image of a cool cat" or as complex as looking for accomodation according to certain criteria on Airbnb. 
+
+`Hub` is a place where you can publish and find the agents. It's in early alpha right now, and we have a lot of deveploment planned for it.
+
+The typical usage of an agent is as follows:
+
+* You pick an agent **type** from Hub or by cloning a repo.
+* You create a **device** if the agent needs it.
+* You create a task **tracker** (optionally, because it will be created if absent).
+* You create an **agent** of a given type.
+* You ask it to solve the **task**.
+* ...
+* Profit!
+
+If you want to give it a try as quickly as possible, go to [Quickstart](../quickstart.mdx). On this page, we'll dive a bit deeper.
+
