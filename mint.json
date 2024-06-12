@@ -33,13 +33,18 @@
       "name": "Website",
       "icon": "globe-pointer",
       "url": "https://agentsea.ai/"
+    },
+    {
+      "name": "Community",
+      "icon": "slack",
+      "url": "https://agentsea.slack.com/join/signup"
     }
   ],
   "navigation": [
     {
       "group": "Get Started",
       "pages": [
-        "introduction", 
+        "introduction",
         "quickstart",
         "configuration",
         "advanced_tutorial"
@@ -91,11 +96,7 @@
     },
     {
       "group": "ThreadMem",
-      "pages": [
-        "threadmem/intro",
-        "threadmem/api",
-        "threadmem/repo"
-      ]
+      "pages": ["threadmem/intro", "threadmem/api", "threadmem/repo"]
     }
   ],
   "footerSocials": {
