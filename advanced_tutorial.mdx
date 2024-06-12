@@ -340,13 +340,13 @@ It looks like a lot is going on here, but if you look closely, we're just doing 
 
 * We generate the image with the grid, same as shown above.
 * We craft the prompt to instruct our MLLM to return to us exactly what we need: the number of the closest dot.
-* We run the prompt and get out result.
+* We run the prompt and get our result.
 * We convert the number back to screen coordinates.
 * Along the way, we record the stuff in the "debug" channel of our agent, so that you can see what exactly is going on, in the UI.
 
 You can find full code for `tool.py` [here](https://github.com/agentsea/surfhamster/blob/4a80d5f1fab16d61a0669ffca1507f6768c2b8dd/surfhamster/tool.py).
 
-When you run the agent now, you can see the images with the grid that it generates, in the debug tab. The MLLM picks the correct number pretty reliably. This method is obviously more intelligent than picking the middle of the screen. However, there is a good change to miss the correct spot because the element we're interested it is right under the middle of the dot.
+When you run the agent now, you can see the images with the grid that it generates, in the debug tab. The MLLM picks the correct number pretty reliably. This method is obviously more intelligent than picking the middle of the screen. However, there is a good chance the bot misses the correct spot because the element we're interested in is right under the dot.
 
 To address this issue, we add a new capability, zooming in.  We zoom in and scale up the part of the screenshot surrounding the chosen dot. 
 
@@ -357,7 +357,9 @@ You can see the implementation in the [SurfSlicer](https://github.com/agentsea/s
 *Note*: You can find the code for this step of the tutorial 
 [here](https://github.com/agentsea/surfhamster/tree/167e73de555986eec76bc25b57c2e433b37ee92f).
 
-As noted above, you can achieve the best results in your agent by combining many methods. One of very simple but powerful ideas is to use plain old fashioned OCR to find the text elements whenever it makes sense and click on them. But we use it with a twist. Not only does OCR return the text, it returns the position of the text. In case ther is no text to click on (because the object is an icon, for example) or the OCR
+As noted above, you can achieve the best results in your agent by combining many methods. One very simple but powerful idea is to use plain old fashioned OCR to find the text elements whenever it makes sense and click on them. But we use it with a twist. **Not only does OCR return the text, it returns the position of the text.** 
+
+In case there is no text to click on (because the object is an icon, for example) or the OCR
 engine doesn't find any text we need (because it's a white text on a blue background, for example), we fall back to the Grid. But if we can find the text, it gives us two benefits:
 
 * Finding text with a bounding box using Tesseract is exceptionally fast in comparison to OpenAI API calls: You get the result in a fraction of a second.
@@ -373,7 +375,7 @@ poetry add pytesseract
 
 Now, we need another bunch of utility methods, to run `Tesseract` and to find bounding boxes for a given text. See the code for `ocr.py` [here](https://github.com/agentsea/surfhamster/blob/167e73de555986eec76bc25b57c2e433b37ee92f/surfhamster/ocr.py).
 
-When we have this, we update `click_object`. We move the grid-related logic to a separate method, add a similar one with the OCR-related logic, and update the main action method as this:
+When we have this, we update `click_object`. We move the grid-related logic to a separate method, add a similar one with the OCR-related logic, and update the main action method like this:
 
 ```python
     @action
@@ -414,13 +416,16 @@ If you look closely on the debug channel now, you'll see that our agent tries to
 
 Now it's your turn! 
 
-There are a lot of techniques that we tried with different level of success; to name a few:
+There are a lot of techniques that we've personally tried with different level of success; to name a few:
 
 * Locating elements on a page with Grounding Dino.
 * Cutting the image into pieces and compositing them on a new image with numbers alongside the various pieces.
 * Zooming into the Grid 2-3 times with new numbers.
+* Layering coordinates over a screenshot
+* Upscaling a screenshot with a GAN
 * OCR, as noted above, but with some tweaks.
+* Many more...
 
-We strongly believe that the key of the success of the agent is mixing and matching a bunch of techniques, including everything from classical ML to deep learning to the frontier models, spiced up with the traditional programming stuff. So get in there and try your own techniques! Get creative. 
+We strongly believe that the key of the success of the agent is mixing and matching a bunch of techniques, including everything from classical ML to deep learning to the most bleeding edge features of frontier models, spiced up with traditional programming. So get in there and try your own techniques! Get creative. Get tricky. Think of it as outthinking the model to get what you want. 
 
 We can't wait to see what you come up with!
