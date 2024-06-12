@@ -1,5 +1,5 @@
 ---
-title: (WIP) Introduction
+title: (REVIEW) Introduction
 icon: hand-wave
 ---
 
@@ -34,3 +34,37 @@ The typical usage of an agent is as follows:
 
 If you want to give it a try as quickly as possible, go to [Quickstart](../quickstart). On this page, we'll dive a bit deeper.
 
+Surely, if you could only use agents that we have developed, it would be boring. `SurfKit` allows you to create and 
+publish your agents in Hub, so that other people can find and re-use them. See [Building Your Agent](../advanced_tutorial) for details.
+
+## CLI basics
+
+You can see the detailed (yet incomplete) list of CLI commands at [CLI Documnetation](./cli). You can see a complete list if you run
+
+```sh
+surfkit --help
+```
+
+The goal of this section is to tell you more about the lifecycle of each entity we listed above.
+
+* **Devices**, **Trackers**, and **Agents** are similar: you can `create` any of them, `list` them, 
+`get` information about them (except for trackers), read the `logs` for agents and trackers and `view` the devices, 
+and `delete` any of them to remove the corresponding entity and free up resources.
+
+```sh
+surfkit create agent
+surfkit list agents
+surfkit get agent -n foo
+surfkit delete agent -n foo
+```
+
+* **Tasks** are different: you create them via `solve`, you can stop them in UI or cancelling the process, and you can
+`list` them and `get` information about them while they are in progress.
+
+* **Types** are the most unique entities in this list:
+
+  * To create a repository for a new type of agent, you run `new`.
+  * Every time you run an agent from the repo, it gets registered in your local database, so you'll see it via `list types`.
+  * To build an image for the agent type, you run `build`.
+  * When the image is uploaded and the `agent.yaml` is updated, you can `login` into Huh and `publish` this type: 
+  now other users will be able to use it!

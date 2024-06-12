@@ -49,6 +49,7 @@
       "group": "SurfKit",
       "pages": [
         "surfkit/intro",
+        "surfkit/cli",
         "surfkit/repo"
       ]
     },
