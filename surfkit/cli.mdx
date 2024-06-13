@@ -3,6 +3,8 @@ title: (REVIEW) CLI Documentation
 icon: code
 ---
 
+**Disclaimer**: This documentation page is incomplete. Our docs agents are working hard on it. In the meantime, please use surfkit --help to get full information about the available commands!
+
 ## Installation
 
 ```sh
@@ -13,8 +15,10 @@ pip install surfkit
 
 ### Create a device
 
+Note: Providers could be qemu for local or gce for the GCP cloud or aws for Amazon cloud. 
+
 ```sh
-surfkit create device --type desktop --provider gce --name bar
+surfkit create device --type desktop --provider qemu --name bar
 ```
 
 ### List devices
