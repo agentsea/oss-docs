@@ -1,5 +1,5 @@
 ---
-title: (WIP) Introduction
+title: (REVIEW) Introduction
 icon: hand-wave
 ---
 
@@ -9,9 +9,15 @@ The main goal of this system is to keep track of your agent tasks and logs of th
 `SurfKit` uses `Taskara` under the hood to create and assign tasks, while the agents themselves 
 use it to record the log and report the completion or failure. 
 
+## Installation
+
+```sh
+pip install taskara
+```
+
 ## Usage
 
-### Create a task
+Create a task:
 
 ```python
 from taskara import Task
@@ -22,20 +28,20 @@ task = Task(
 )
 ```
 
-### Assign the task to an agent
+Assign the task to an agent:
 
 ```python
 task.assigned_to = "roko@agentsea.ai"
 ```
 
-### Post a message to the task thread
+Post a message to the task thread:
 
 ```python
 task.post_message("assistant", "Getting started working on this")
 task.status = "in progress"
 ```
 
-### Create a custom thread for the task
+Create a custom thread for the task:
 
 ```python
 task.create_thread("debug")
@@ -43,7 +49,7 @@ task.post_message("assistant", "I'll post debug messages to this thread", thread
 task.post_message("assistant", 'My current screenshot', images=["b64img"], thread="debug")
 ```
 
-### Store prompts used to accomplish the task
+Store prompts used to accomplish the task:
 
 ```python
 thread = RoleThread()
@@ -56,18 +62,73 @@ response = RoleMessage(
 task.store_prompt(thread, response, namespace="actions")
 ```
 
-### Store the result
+Store the result:
 
 ```python
 task.output = "The most common type of french duck is the Rouen"
 task.status = "success"
 ```
 
-### Save the task
+Save the task:
 
 ```python
 task.save()
 ```
+
+## Tracker
+
+`Taskara` comes with a task tracker server which can be run on docker or kubernetes.
+
+Install `SurfKit` to create a tracker:
+
+```
+pip install surfkit
+```
+
+Create a tracker:
+
+```
+surfkit create tracker
+```
+
+List trackers:
+
+```
+surfkit list trackers
+```
+
+Get tracker logs:
+
+```
+surfkit logs tracker <name>
+```
+
+Create a task:
+
+```
+surfkit create task --description "Search for french ducks"
+```
+
+List tasks:
+
+```
+surfkit list tasks
+```
+
+Get a task:
+
+```
+surfkit get task <id>
+```
+
+## Integrations
+
+Taskara is integrated with:
+
+- [Surfkit](https://github.com/agentsea/surfkit) A platform for AI agents
+- [MLLM](https://github.com/agentsea/mllm) A prompt management, routing, and schema validation library for multimodal LLMs
+- [Skillpacks](https://github.com/agentsea/skillpacks) A library to fine tune AI agents on tasks.
+- [Threadmem](https://github.com/agentsea/threadmem) A thread management library for AI agents
 
 ## Backends
 
@@ -84,4 +145,17 @@ DB_NAME=tasks
 DB_HOST=localhost
 DB_USER=postgres
 DB_PASS=abc123
+```
+
+Thread image storage by default will utilize the db, to configure bucket storage using GCS:
+
+- Create a bucket with fine grained permissions.
+- Create a GCP service account JSON with permissions to write to the bucket.
+
+```sh
+export THREAD_STORAGE_SA_JSON='{
+  "type": "service_account",
+  ...
+}'
+export THREAD_STORAGE_BUCKET=my-bucket
 ```
