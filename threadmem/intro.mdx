@@ -1,5 +1,5 @@
 ---
-title: Introduction
+title: (REVIEW) Introduction
 icon: hand-wave
 ---
 
@@ -38,6 +38,20 @@ As mentioned above, the library is designed for making it easier to communicate 
 
 ```python
 json_load = thread.to_oai()
+```
+
+Add images of any variety to the thread. We support base64, filepath, PIL, and URL:
+
+```python
+from PIL import Image
+
+img1 = Image.open("img1.png")
+
+thread.post(
+  role="user",
+  msg="Whats this image?",
+  images=["data:image/jpeg;base64,...", "./img1.png", img1, "https://shorturl.at/rVyAS"]
+)
 ```
 
 ## Using PostgreSQL
