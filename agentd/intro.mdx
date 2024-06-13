@@ -1,9 +1,9 @@
 ---
-title: Introduction
+title: (REVIEW) Introduction
 icon: hand-wave
 ---
 
-`agentd` is a powerful daemon designed to make a desktop OS accessible to AI agents. By exposing an HTTP API, `agentd` allows for seamless interactions between a desktop environment and AI-driven applications or scripts. 
+`AgentD` is a powerful daemon designed to make a desktop OS accessible to AI agents. By exposing an HTTP API, `AgentD` allows for seamless interactions between a desktop environment and AI-driven applications or scripts. 
 
 ## Features
 
@@ -14,22 +14,22 @@ icon: hand-wave
 
 ## Getting Started
 
-To get started with `agentd`, follow these simple steps:
+To get started with `AgentD`, follow these simple steps:
 
 1. **Installation:**
-   - For a quick start, we recommend using one of our pre-configured VMs which come with `agentd` pre-installed. This is the easiest way to get up and running without worrying about dependencies or configuration.
-   - Alternatively, if you prefer to install `agentd` on your own Ubuntu VM, you can use our remote installation script. This is suitable for users who want more control over the installation process or need to integrate `agentd` into an existing setup.
-   - See details in [Installation](./installation.md) section.
+   - For a quick start, we recommend using one of our pre-configured VMs which come with `AgentD` pre-installed. This is the easiest way to get up and running without worrying about dependencies or configuration.
+   - Alternatively, if you prefer to install `AgentD` on your own Ubuntu VM, you can use our remote installation script. This is suitable for users who want more control over the installation process or need to integrate `AgentD` into an existing setup.
+   - See details in [Installation](./installation) section.
 
 2. **Usage:**
-   - Once `agentd` is installed and the VM is launched, you can start interacting with its desktop through the HTTP API. The API allows you to control the mouse and keyboard, manage web browser sessions, capture screenshots, and much more.
-   - To check if `agentd` is running correctly, you can send a request to the `/health` endpoint. A successful response indicates that agentd is ready to accept commands.
+   - Once `AgentD` is installed and the VM is launched, you can start interacting with its desktop through the HTTP API. The API allows you to control the mouse and keyboard, manage web browser sessions, capture screenshots, and much more.
+   - To check if `AgentD` is running correctly, you can send a request to the `/health` endpoint. A successful response indicates that AgentD is ready to accept commands.
 
 3. **API Endpoints:**
-   - `agentd` provides a rich set of API endpoints to interact with the desktop. Here are some of the key functionalities:
+   - `AgentD` provides a rich set of API endpoints to interact with the desktop. Here are some of the key functionalities:
      - Mouse and Keyboard Control: `/move_mouse`, `/click`, `/type_text`, etc.
      - Web Browser Control: `/open_url`
      - Screen Capture: `/screenshot`
      - Session Recording: `/recordings`, `/recordings/{session_id}/stop`, etc.
 
-For more detailed information on how to use `agentd` and its API, please refer to the full [API documentation](https://agentsea.github.io/agentd/index.html) and examples provided in our [GitHub repository](https://github.com/agentsea/agentd).
+For more detailed information on how to use `AgentD` and its API, please refer to the full [API documentation](https://agentsea.github.io/agentd/index.html) and examples provided in our [GitHub repository](https://github.com/agentsea/agentd).
