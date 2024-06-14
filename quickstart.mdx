@@ -87,22 +87,28 @@ surfkit create device --provider qemu -n desktop01
 </Accordion>
 
 <Accordion icon="google" title="Create a desktop on GCE">
+
+
 __Requirements__
 - [gcloud](https://cloud.google.com/sdk/docs/install) installed
-- [Logged in](https://cloud.google.com/sdk/gcloud/reference/auth/application-default/login) to an account with create permissions for GCE
-
+- [Logged in](https://cloud.google.com/sdk/gcloud/reference/auth/application-default/login) to an account with create permissions for GCE*
 ```
 surfkit create device --provider gce -n desktop01
 ```
 
+_* Read [this](/configuration#configure-gcp-to-create-desktop-vms) for more details on how to configure GCE to create desktop VMs_
+
+
 </Accordion>
 <Accordion icon="aws" title="Create a desktop on EC2">
 __Requirements__
-- [Authentication configured](https://docs.aws.amazon.com/cli/v1/userguide/cli-chap-authentication.html) with create permissions for EC2
+- [Authentication configured](https://docs.aws.amazon.com/cli/v1/userguide/cli-chap-authentication.html) with create permissions for EC2*
 
 ```
 surfkit create device --provider ec2 -n desktop01
 ```
+
+_* Read [this](/configuration#configure-aws-to-create-desktop-vms) for more details on how to configure AWS to create desktop VMs_
 
 </Accordion>
 
