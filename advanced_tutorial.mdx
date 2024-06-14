@@ -37,11 +37,20 @@ Feel free to leave the docker image repo empty for now and use a standard icon. 
 
 ```bash
 surfkit create tracker -n hound001 -r docker 
-surfkit create device -n eve001 -p qemu
-surfkit create agent -n robby001 -r process
+```
 
-surfkit solve -a robby001 --device eve001 --tracker hound001 \
-    -d "Find a cool cat image in the internet" --starting-url "google.com"
+```bash
+surfkit create device -n eve001 -p qemu
+```
+
+```bash
+surfkit create agent -n robby001 -r process
+```
+
+```bash
+surfkit solve "Find a cool cat image in the internet" \
+    --agent robby001 --device eve001 --tracker hound001 \
+    --starting-url "google.com"
 ```
 
 If the browser tab with a VM desktop and an agent log opens and the agent starts solving the task, 
