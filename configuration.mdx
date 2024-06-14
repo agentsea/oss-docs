@@ -1,5 +1,396 @@
 ---
-title: (WIP) Configuration of GCP, AWS, K8s
+title: (Review) Configuration of GCP, AWS, K8s
 description: Learn how to set up your cloud to work with surfkit
 icon: sign-posts-wrench
 ---
+
+## Agents running anywhere
+
+Agentsea is designed to run on your own cloud or hardware.
+
+Agents can run as:
+
+- Python processes
+- Docker containers
+- Kubernetes pods
+
+Desktops can run on:
+
+- QEMU
+- GCE
+- EC2
+
+This document will provide an in depth walkthrough on how to set up your cloud to work with surfkit.
+
+## Configure GCP to create desktop VMs
+
+Agents are designed to be capable of operating on desktop VMs. Running a full VM locally can consume a fair amount of resources, it's
+often preferred to run the VM in the cloud. This section will walk you through how to set up a GCP account to run a VM from scratch.
+
+### Prerequisites
+
+- A valid email address
+- A credit card for billing (GCP offers a free tier and $300 in free credits for new users)
+
+### Step 1: Create a GCP Account
+
+1. Go to the [Google Cloud Platform](https://cloud.google.com/) website.
+2. Click on the **Get started for free** button.
+3. Follow the on-screen instructions to create a new Google account or sign in with an existing Google account.
+4. Set up your billing information to access the free tier and free credits.
+
+### Step 2: Set Up a New Project
+
+1. Once logged into the GCP Console, click on the **Select a project** dropdown at the top of the page.
+2. Click on **New Project**.
+3. Enter a project name, select a billing account, and choose a location.
+4. Click on **Create**.
+
+### Step 3: Enable the Compute Engine API
+
+1. In the GCP Console, go to the **Navigation menu** > **API & Services** > **Library**.
+2. Search for **Compute Engine API**.
+3. Click on **Compute Engine API** and then click on **Enable**.
+
+### Step 4: Ensure Necessary Permissions
+
+1. As the owner of the project, you already have the necessary permissions to manage Artifact Registry repositories.
+   If you are using a different account, ensure that it has the **Editor** role at the project level.
+
+### Step 5: Install and Configure Google Cloud SDK (gcloud CLI)
+
+1. Download and install the [Google Cloud SDK](https://cloud.google.com/sdk/docs/install).
+2. Open a terminal or command prompt.
+3. Initialize the SDK with the following command:
+   ```sh
+   gcloud init
+   ```
+4. Follow the on-screen prompts to log in with your Google account and set the default project.
+
+### Step 6: Authenticate the CLI Using Application-Default Login
+
+1. Authenticate the gcloud CLI with your user account:
+   ```sh
+   gcloud auth application-default login
+   ```
+   Follow the on-screen prompts to log in with your Google account. This command sets up application-default credentials for the CLI.
+
+### Step 7: Verify Permissions and Create a GCE VM Instance
+
+1. Verify that the CLI is authenticated and can access the project:
+   ```
+   gcloud auth list
+   ```
+2. Verify that the Compute Engine API is enabled:
+   ```
+   gcloud services list --enabled | grep compute.googleapis.com
+   ```
+
+### Additional Considerations: Quotas
+
+By default, GCP provides sufficient quotas for most users. However, if you need to increase quotas for your project:
+
+1. Go to the **Navigation menu** > **IAM & Admin** > **Quotas**.
+2. Filter by the quota you need to increase (e.g., `CPUs`).
+3. Select the quota and click on **Edit Quotas**.
+4. Fill out the request form and submit it. Google will review your request and notify you of the outcome.
+
+### Conclusion
+
+You have now successfully created a GCP account, set up the necessary permissions, and authenticated the CLI using application-default login to create GCE VM instances.
+For more advanced configurations and management, refer to the [GCP documentation](https://cloud.google.com/docs).
+
+Now create a VM for an agent to use
+
+```
+surfkit create device --provider gce
+```
+
+## Configure AWS to create desktop VMs
+
+Agents are designed to be capable of operating on desktop VMs. Running a full VM locally can consume a fair amount of resources, it's
+often preferred to run the VM in the cloud. This section will walk you through how to set up a AWS account to run a VM from scratch.
+
+### Prerequisites
+
+- A valid email address
+- A credit card for billing (AWS offers a free tier for new users)
+
+### Step 1: Create an AWS Account
+
+1. Go to the [AWS](https://aws.amazon.com/) website.
+2. Click on the **Create an AWS Account** button.
+3. Follow the on-screen instructions to create a new AWS account.
+4. Set up your billing information to access the free tier.
+
+### Step 2: Create Access Keys for Your IAM User
+
+1. Sign in to the [AWS Management Console](https://aws.amazon.com/console/).
+2. Go to the **IAM** service from the Services menu.
+3. Click on **Users** in the left-hand menu.
+4. Select your user name from the list.
+5. Click on the **Security credentials** tab.
+6. Scroll down to the **Access keys** section and click on **Create access key**.
+7. Download the CSV file containing the user’s access key ID and secret access key.
+
+### Step 3: Install and Configure AWS CLI
+
+1. Download and install the [AWS CLI](https://aws.amazon.com/cli/).
+2. Open a terminal or command prompt.
+3. Configure the AWS CLI with your user’s access key ID and secret access key:
+   ```
+   aws configure
+   ```
+   Follow the prompts to enter your access key ID, secret access key, default region name, and default output format.
+
+### Step 4: Verify Permissions and Create an EC2 Instance
+
+1. Verify that the CLI is authenticated and can access the EC2 service:
+   ```
+   aws ec2 describe-instances
+   ```
+
+### Additional Considerations: Quotas
+
+By default, AWS provides sufficient quotas for most users. However, if you need to increase quotas for your account:
+
+1. Go to the **Service Quotas** service from the Services menu.
+2. Find the quota you need to increase (e.g., `Running On-Demand Standard (A, C, D, H, I, M, R, T, Z) instances`).
+3. Click on the quota, then click on **Request quota increase**.
+4. Fill out the request form and submit it. AWS will review your request and notify you of the outcome.
+
+### Conclusion
+
+You have now successfully created an AWS account, set up the necessary permissions, and authenticated the CLI to create EC2 instances.
+For more advanced configurations and management, refer to the [AWS documentation](https://docs.aws.amazon.com/).
+
+Now create a VM for an agent to use
+
+```
+surfkit create device --provider ec2
+```
+
+## Configure Kubernetes to run agents
+
+Running a single agent locally can be useful for testing and development, but it's often preferred to run multiple agents in the cloud.
+This section will walk you through how to set up a Kubernetes cluster to run agents from scratch.
+
+Agentsea works with _any_ vanilla Kubernetes cluster, all you need is a working kubeconfig.
+However, this guide will use [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine) (GKE) as an example for simplicity.
+
+### Prerequisites
+
+- A valid email address
+- A credit card for billing (GCP offers a free tier and $300 in free credits for new users)
+
+### Step 1: Create a GCP Account
+
+1. Go to the [Google Cloud Platform](https://cloud.google.com/) website.
+2. Click on the **Get started for free** button.
+3. Follow the on-screen instructions to create a new Google account or sign in with an existing Google account.
+4. Set up your billing information to access the free tier and free credits.
+
+### Step 2: Set Up a New Project
+
+1. Once logged into the GCP Console, click on the **Select a project** dropdown at the top of the page.
+2. Click on **New Project**.
+3. Enter a project name, select a billing account, and choose a location.
+4. Click on **Create**.
+
+### Step 3: Enable the Kubernetes Engine API
+
+1. In the GCP Console, go to the **Navigation menu** > **API & Services** > **Library**.
+2. Search for **Kubernetes Engine API**.
+3. Click on **Kubernetes Engine API** and then click on **Enable**.
+
+### Step 4: Ensure Necessary Permissions
+
+1. As the owner of the project, you already have the necessary permissions to manage Artifact Registry repositories.
+   If you are using a different account, ensure that it has the **Editor** role at the project level.
+
+### Step 5: Install and Configure Google Cloud SDK (gcloud CLI)
+
+1. Download and install the [Google Cloud SDK](https://cloud.google.com/sdk/docs/install).
+2. Open a terminal or command prompt.
+3. Initialize the SDK with the following command:
+   ```
+   gcloud init
+   ```
+4. Follow the on-screen prompts to log in with your Google account and set the default project.
+
+### Step 6: Authenticate the CLI Using Application-Default Login
+
+1. Authenticate the gcloud CLI with your user account:
+   ```
+   gcloud auth application-default login
+   ```
+   Follow the on-screen prompts to log in with your Google account. This command sets up application-default credentials for the CLI.
+
+### Step 7: Create a Kubernetes Cluster
+
+1. Verify that the CLI is authenticated and can access the project:
+   ```
+   gcloud auth list
+   ```
+2. Verify that the Kubernetes Engine API is enabled:
+   ```
+   gcloud services list --enabled | grep container.googleapis.com
+   ```
+3. Create a new Kubernetes cluster:
+
+   ```
+   gcloud container clusters create CLUSTER_NAME --zone ZONE
+   ```
+
+   Replace `CLUSTER_NAME`with the desired name of your cluster and`ZONE` with your preferred GCP zone.
+
+### Step 8: Configure kubectl to Connect to Your Cluster
+
+1. Get the credentials for your new cluster:
+
+   ```
+   gcloud container clusters get-credentials CLUSTER_NAME --zone ZONE
+   ```
+
+   Replace `CLUSTER_NAME`and`ZONE` with the same values you used when creating the cluster.
+
+2. Verify that `kubectl` is configured correctly:
+   ```
+   kubectl get nodes
+   ```
+   This command should return a list of nodes in your cluster.
+
+### Additional Considerations: Quotas
+
+By default, GCP provides sufficient quotas for most users. However, if you need to increase quotas for your project:
+
+1. Go to the **Navigation menu** > **IAM & Admin** > **Quotas**.
+2. Filter by the quota you need to increase (e.g., `In-use IP addresses in region`).
+3. Select the quota and click on **Edit Quotas**.
+4. Fill out the request form and submit it. Google will review your request and notify you of the outcome.
+
+### Conclusion
+
+You have now successfully created a GCP account, set up the necessary permissions, and configured the CLI to create and manage a Kubernetes cluster.
+For more advanced configurations and management, refer to the [GCP documentation](https://cloud.google.com/docs).
+
+Now run an agent on Kubernetes
+
+```
+surfkit create agent -t pbarker/SurfPizza --runtime kube
+```
+
+## Configure an image repository to publish your agents
+
+In order to publish an agent, you will need an image repository to store your agent's Docker image. Any image repository that can be made
+public will work. In this section we will walk through creating an image repository on [Google Artifact Registry](https://cloud.google.com/artifact-registry) from scratch.
+
+### Prerequisites
+
+- A valid email address
+- A credit card for billing (GCP offers a free tier and $300 in free credits for new users)
+
+### Step 1: Create a GCP Account
+
+1. Go to the [Google Cloud Platform](https://cloud.google.com/) website.
+2. Click on the **Get started for free** button.
+3. Follow the on-screen instructions to create a new Google account or sign in with an existing Google account.
+4. Set up your billing information to access the free tier and free credits.
+
+### Step 2: Set Up a New Project
+
+1. Once logged into the GCP Console, click on the **Select a project** dropdown at the top of the page.
+2. Click on **New Project**.
+3. Enter a project name, select a billing account, and choose a location.
+4. Click on **Create**.
+
+### Step 3: Enable the Artifact Registry API
+
+1. In the GCP Console, go to the **Navigation menu** > **API & Services** > **Library**.
+2. Search for **Artifact Registry API**.
+3. Click on **Artifact Registry API** and then click on **Enable**.
+
+### Step 4: Ensure Necessary Permissions
+
+1. As the owner of the project, you already have the necessary permissions to manage Artifact Registry repositories.
+   If you are using a different account, ensure that it has the **Editor** role at the project level.
+
+### Step 5: Install and Configure Google Cloud SDK (gcloud CLI)
+
+1. Download and install the [Google Cloud SDK](https://cloud.google.com/sdk/docs/install).
+2. Open a terminal or command prompt.
+3. Initialize the SDK with the following command:
+   ```
+   gcloud init
+   ```
+4. Follow the on-screen prompts to log in with your Google account and set the default project.
+
+### Step 6: Authenticate the CLI Using Application-Default Login
+
+1. Authenticate the gcloud CLI with your user account:
+   ```
+   gcloud auth application-default login
+   ```
+   Follow the on-screen prompts to log in with your Google account. This command sets up application-default credentials for the CLI.
+
+### Step 7: Configure Docker to Use Google Artifact Registry
+
+1. Install Docker if it is not already installed. Follow the instructions on the [Docker website](https://docs.docker.com/get-docker/) to install Docker for your operating system.
+2. Configure Docker to authenticate with Google Artifact Registry:
+   ```
+   gcloud auth configure-docker us-central1-docker.pkg.dev
+   ```
+
+This command updates the Docker configuration to use the credentials from the gcloud CLI. Replace `us-central1` with the region where your repository is located.
+
+### Step 8: Create a Repository
+
+1. Create an Artifact Registry repository:
+
+```
+gcloud artifacts repositories create REPOSITORY_NAME --repository-format=docker --location=LOCATION
+```
+
+Replace `REPOSITORY_NAME`with the desired name of your repository and`LOCATION`with your preferred GCP region (e.g.,`us-central1`).
+
+### Step 9: Make the Repository Public
+
+1. In the GCP Console, go to the **Navigation menu** > **Artifact Registry** > **Repositories**.
+2. Click on the repository you want to make public.
+3. Click on the **Permissions** tab.
+4. Click on **Add principal**.
+5. In the **New principals** field, enter `allUsers`.
+6. In the **Select a role** dropdown, choose **Artifact Registry** > **Artifact Registry Reader**.
+7. Click on **Save**.
+
+### Step 10: Verify the Image in Google Artifact Registry
+
+1. In the GCP Console, go to the **Navigation menu** > **Artifact Registry** > **Repositories** > **REPOSITORY_NAME**.
+2. You should see the image you pushed listed under your repository.
+
+### Additional Considerations: Quotas
+
+By default, GCP provides sufficient quotas for most users. However, if you need to increase quotas for your project:
+
+1. Go to the **Navigation menu** > **IAM & Admin** > **Quotas**.
+2. Filter by the quota you need to increase (e.g., `Artifact Registry storage`).
+3. Select the quota and click on **Edit Quotas**.
+4. Fill out the request form and submit it. Google will review your request and notify you of the outcome.
+
+### Conclusion
+
+You have now successfully created a GCP account, set up the necessary permissions, configured the CLI, created an Artifact Registry repository, and made it public.
+For more advanced configurations and management, refer to the [GCP documentation](https://cloud.google.com/docs).
+
+You can proceed to create an agent and use the registry when prompted for it.
+
+```
+mkdir newagent && cd newagent
+surfkit new
+```
+
+Then once the agent is ready
+
+```
+surfkit publish --build
+```
