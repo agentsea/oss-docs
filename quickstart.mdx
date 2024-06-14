@@ -118,6 +118,14 @@ _* Read [this](/configuration#configure-aws-to-create-desktop-vms) for more deta
 surfkit list devices
 ```
 
+## Create a Tracker
+
+Before solving a task, we have the choice to create a [tracker](/taskara/intro#tracker), which is a task server.
+
+```
+surfkit create tracker -n tracker01 -r docker
+```
+
 ## Solve a task
 
 **Use the agent to solve a task on the device**
@@ -125,8 +133,11 @@ surfkit list devices
 ```
 surfkit solve "Search for the most common variety of french duck" \
   --agent agent01 \
-  --device desktop01
+  --device desktop01 \
+  --tracker tracker01
 ```
+
+_* Note: if a tracker is not created explicitly created beforehand and passed on to the `solve` command via the `--tracker` flag, `surfkit` will ask if you want to create one automatically._
 
 ## What's next
 
