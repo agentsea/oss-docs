@@ -42,11 +42,20 @@
   ],
   "navigation": [
     {
-      "group": "Get Started",
+      "group": "Getting Started",
       "pages": [
         "introduction",
         "quickstart",
-        "configuration",
+        {
+          "group": "Configuration",
+          "pages": [
+            "configuration",
+            "configuration#configure-gcp-to-create-desktop-vms",
+            "configuration#configure-aws-to-create-desktop-vms",
+            "configuration#configure-kubernetes-to-run-agents",
+            "configuration#configure-an-image-repository-to-publish-your-agents"
+          ]
+        },
         "advanced_tutorial"
       ]
     },
