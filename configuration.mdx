@@ -22,10 +22,12 @@ Desktops can run on:
 
 This document will provide an in depth walkthrough on how to set up your cloud to work with surfkit.
 
+We guide you through both Google Cloud (GCP) and Amazon Web Services (AWS) from scratch. Both are supported by Surfkit and Azure will be coming soon.
+
 ## Configure GCP to create desktop VMs
 
 Agents are designed to be capable of operating on desktop VMs. Running a full VM locally can consume a fair amount of resources, it's
-often preferred to run the VM in the cloud. This section will walk you through how to set up a GCP account to run a VM from scratch.
+often preferred to run the VM in the cloud. This section will walk you through how to set up a GCP account from scratch to run a VM.
 
 ### Prerequisites
 
@@ -149,7 +151,7 @@ By default, GCP provides sufficient quotas for most users. However, if you need 
 You have now successfully created a GCP account, set up the necessary permissions, and authenticated the CLI using application-default login to create GCE VM instances.
 For more advanced configurations and management, refer to the [GCP documentation](https://cloud.google.com/docs).
 
-Now create a VM for an agent to use
+Now you are ready to create a VM for an agent to use with the following command:
 
 ```
 surfkit create device --provider gce
@@ -158,7 +160,7 @@ surfkit create device --provider gce
 ## Configure AWS to create desktop VMs
 
 Agents are designed to be capable of operating on desktop VMs. Running a full VM locally can consume a fair amount of resources, it's
-often preferred to run the VM in the cloud. This section will walk you through how to set up a AWS account to run a VM from scratch.
+often preferred to run the VM in the cloud. This section will walk you through how to set up a AWS account from scratch to run a VM.
 
 ### Prerequisites
 
