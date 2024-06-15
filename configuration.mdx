@@ -151,7 +151,9 @@ By default, GCP provides sufficient quotas for most users. However, if you need 
 You have now successfully created a GCP account, set up the necessary permissions, and authenticated the CLI using application-default login to create GCE VM instances.
 For more advanced configurations and management, refer to the [GCP documentation](https://cloud.google.com/docs).
 
-Now you are ready to create a VM for an agent to use with the following command:
+If you have not already run through our [Quickstart](https://docs.hub.agentsea.ai/quickstart) to setup surfkit, please do that now. 
+
+Once you've done that, you're ready to create a GCP cloud VM for an agent to use with the following command:
 
    ```
       surfkit create device --provider gce -n my-surfkit-vm
@@ -159,7 +161,6 @@ Now you are ready to create a VM for an agent to use with the following command:
 
 Replace `my-surfkit-vm` with whatever friendly name you want to use.
 
-Now you can turn to our [Quickstart](https://docs.hub.agentsea.ai/quickstart) to launch your first agent.
 
 ## Configure AWS to create desktop VMs
 
@@ -219,15 +220,15 @@ By default, AWS provides sufficient quotas for most users. However, if you need 
 You have now successfully created an AWS account, set up the necessary permissions, and authenticated the CLI to create EC2 instances.
 For more advanced configurations and management, refer to the [AWS documentation](https://docs.aws.amazon.com/).
 
-Now create a VM for an agent to use
+If you have not already run through our [Quickstart](https://docs.hub.agentsea.ai/quickstart) to setup surfkit, please do that now. 
 
-```
-surfkit create device --provider ec2 -n my-surfkit-vm
-```
+Once you've done that, you're ready to create a GCP cloud VM for an agent to use with the following command:
+
+   ```
+      surfkit create device --provider gce -n my-surfkit-vm
+   ```
 
 Replace `my-surfkit-vm` with whatever friendly name you want to use.
-
-Now you can turn to our [Quickstart](https://docs.hub.agentsea.ai/quickstart) to launch your first agent.
 
 ## Configure Kubernetes to run agents
 
