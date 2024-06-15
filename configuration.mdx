@@ -242,6 +242,7 @@ However, this guide will use [Google Kubernetes Engine](https://cloud.google.com
 
 - A valid email address
 - A credit card for billing (GCP offers a free tier and $300 in free credits for new users)
+- **CRITICAL NOTE** - You will need to activate your free credits by choosing the blue "Activate" button at the top right of the screen in order to be able to create a Kubernetes cluster, which requires 900 GB of SSD storage by default and trial accounts come with only 500 GBs.
 
 **NOTE:** If you've already done the section [Configure GCP to Create a Desktop VM](https://docs.hub.agentsea.ai/configuration#configure-gcp-to-create-desktop-vms), you may skip Step 1 and Step 2.  
 
@@ -305,6 +306,12 @@ You should see the following:
 ```
    container.googleapis.com            Kubernetes Engine API
 ```
+
+3. Ensure that you have the correct quotas set to create a new cluster. By default SSD_TOTAL_GB is set to 500 and a k8s cluster requies 900/
+
+3a. Go to your [console admin quotas](https://console.cloud.google.com/iam-admin/quotas) to see a list of your current limits.
+
+3b. Type `ssd` into the **Filter** search bar right above the quotas.
 
 3. Create a new Kubernetes cluster:
 
