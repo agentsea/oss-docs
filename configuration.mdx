@@ -245,7 +245,7 @@ However, this guide will use [Google Kubernetes Engine](https://cloud.google.com
 
 **NOTE:** If you've already done the section [Configure GCP to Create a Desktop VM](https://docs.hub.agentsea.ai/configuration#configure-gcp-to-create-desktop-vms), you may skip Step 1 and Step 2.  
 
-If you already have a pre-existing GCP account that you're using then you can skip to Step 2 where and create a new project for surkkit.  If you have an existing project that you want to use, go to Step 3.
+If you already have a pre-existing GCP account that you're using then you can skip to Step 2 where and create a new project for surfkit.  If you have an existing project that you want to use, go to Step 3.
 
 ### Step 1: Create a GCP Account
 
@@ -300,6 +300,12 @@ If you already have a pre-existing GCP account that you're using then you can sk
    ```
    gcloud services list --enabled | grep container.googleapis.com
    ```
+You should see the following:
+
+```
+   container.googleapis.com            Kubernetes Engine API
+```
+
 3. Create a new Kubernetes cluster:
 
    ```
@@ -307,6 +313,8 @@ If you already have a pre-existing GCP account that you're using then you can sk
    ```
 
    Replace `CLUSTER_NAME`with the desired name of your cluster and`ZONE` with your preferred GCP zone.
+
+   To see a list of existing zones type `gcloud compute zones list`
 
 ### Step 8: Configure kubectl to Connect to Your Cluster
 
