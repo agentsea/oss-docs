@@ -50,7 +50,7 @@
           "group": "Configuration",
           "pages": [
             "configuration",
-            "configure-gcp-to-create-desktop-vms",
+            "configure-gcp",
             "configure-aws-to-create-desktop-vms",
             "configure-kubernetes-to-run-agents",
             "configure-an-image-repository-to-publish-your-agents"
