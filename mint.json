@@ -46,28 +46,7 @@
       "pages": [
         "introduction",
         "quickstart",
-        {
-          "group": "Configuration",
-          "pages": [
-            "configuration",
-            {
-              "name": "Configure GCP to Create Desktop VMs",
-              "url": "configuration#configure-gcp-to-create-desktop-vms"
-            },
-            {
-              "name": "Configure AWS to Create Desktop VMs",
-              "url": "configuration#configure-aws-to-create-desktop-vms"
-            },
-            {
-              "name": "Configure Kubernetes to Run Agents",
-              "url": "configuration#configure-kubernetes-to-run-agents"
-            },
-            {
-              "name": "Configure an Image Repository to Publish Your Agents",
-              "url": "configuration#configure-an-image-repository-to-publish-your-agents"
-            }
-          ]
-        },
+        "configuration",
         "advanced_tutorial"
       ]
     },
