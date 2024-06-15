@@ -50,10 +50,10 @@
           "group": "Configuration",
           "pages": [
             "configuration",
-            "configuration#configure-gcp-to-create-desktop-vms",
-            "configuration#configure-aws-to-create-desktop-vms",
-            "configuration#configure-kubernetes-to-run-agents",
-            "configuration#configure-an-image-repository-to-publish-your-agents"
+            "configure-gcp-to-create-desktop-vms",
+            "configure-aws-to-create-desktop-vms",
+            "configure-kubernetes-to-run-agents",
+            "configure-an-image-repository-to-publish-your-agents"
           ]
         },
         "advanced_tutorial"
