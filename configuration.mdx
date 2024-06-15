@@ -115,6 +115,15 @@ You may run `gcloud config configurations list` to see the list of configuration
    ```
    gcloud auth list
    ```
+If this is your first GCP account, you will see only one account listed. If you have multiple, you will see an `*` next to the active account like so:
+
+```
+      Credentialed Accounts
+ACTIVE  ACCOUNT
+        roko@basalisk.ai
+*       eyudkowsky@maxpaperclips.org
+```
+
 2. Verify that the Compute Engine API is enabled:
    ```
    gcloud services list --enabled | grep compute.googleapis.com
