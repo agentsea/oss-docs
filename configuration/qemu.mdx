@@ -1,0 +1,102 @@
+---
+title: Installing QEMU on Mac or Linux
+description: Learn how to set up QEMU on Mac or Linux
+icon: sign-posts-wrench
+---
+
+## Installing QEMU on Mac and Linux
+
+QEMU is an open-source machine emulator and virtualizer. Here is how you install QEMU on Mac (using Homebrew or MacPorts) and Linux.
+
+### Installing QEMU on Mac
+
+#### Using Homebrew
+
+Homebrew is a popular package manager for macOS. Follow these steps to install QEMU using Homebrew:
+
+1. **Install Homebrew** (if not already installed):
+    ```sh
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    ```
+
+2. **Install QEMU**:
+    ```sh
+    brew install qemu
+    ```
+
+3. **Verify the installation**:
+    ```sh
+    qemu-system-x86_64 --version
+    ```
+
+#### Using MacPorts
+
+MacPorts is another package manager for macOS. Follow these steps to install QEMU using MacPorts:
+
+1. **Install MacPorts** (if not already installed):
+    Follow the instructions on the [MacPorts installation page](https://www.macports.org/install.php).
+
+2. **Update MacPorts**:
+    ```sh
+    sudo port selfupdate
+    ```
+
+3. **Install QEMU**:
+    ```sh
+    sudo port install qemu
+    ```
+
+4. **Verify the installation**:
+    ```sh
+    qemu-system-x86_64 --version
+    ```
+
+### Installing QEMU on Linux
+
+#### Using Homebrew
+
+Homebrew is also available for Linux. Follow these steps to install QEMU using Homebrew:
+
+1. **Install Homebrew** (if not already installed):
+    ```sh
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    ```
+
+2. **Install QEMU**:
+    ```sh
+    brew install qemu
+    ```
+
+3. **Verify the installation**:
+    ```sh
+    qemu-system-x86_64 --version
+    ```
+
+#### Using Linuxbrew
+
+Linuxbrew is a fork of Homebrew for Linux. Follow these steps to install QEMU using Linuxbrew:
+
+1. **Install Linuxbrew** (if not already installed):
+    ```sh
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
+    ```
+
+2. **Add Linuxbrew to your PATH**:
+    ```sh
+    test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
+    test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+    test -r ~/.bash_profile && echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.bash_profile
+    echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile
+    ```
+
+3. **Install QEMU**:
+    ```sh
+    brew install qemu
+    ```
+
+4. **Verify the installation**:
+    ```sh
+    qemu-system-x86_64 --version
+    ```
+
+By following the above steps, you can easily install QEMU on both Mac and Linux systems using either Homebrew or MacPorts.
