@@ -1,0 +1,131 @@
+---
+title: Configure Kubernetes to run agents
+icon: sign-posts-wrench
+---
+
+Running a single agent locally can be useful for testing and development, but it's often preferred to run multiple agents in the cloud.
+This section will walk you through how to set up a Kubernetes cluster to run agents from scratch.
+
+Agentsea works with _any_ vanilla Kubernetes cluster, all you need is a working kubeconfig.
+However, this guide will use [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine) (GKE) as an example for simplicity.
+
+## Prerequisites
+
+- A valid email address
+- A credit card for billing (GCP offers a free tier and $300 in free credits for new users)
+- **CRITICAL NOTE:** If you just signed up for your account, you will need to activate your free credits by choosing the blue "Activate" button at the top right of the screen in order to be able to create a Kubernetes cluster, which requires 900 GB of SSD storage by default and trial accounts come with only 500 GBs.
+
+**NOTE:** If you've already done the section [Configure GCP to Create a Desktop VM](./gcp), you may skip Step 1 and Step 2.  
+
+If you already have a pre-existing GCP account that you're using then you can skip to Step 2 where and create a new project for surfkit.  If you have an existing project that you want to use, go to Step 3.
+
+## Step 1: Create a GCP Account
+
+1. Go to the [Google Cloud Platform](https://cloud.google.com/) website.
+2. Click on the **Get started for free** button.
+3. Follow the on-screen instructions to create a new Google account or sign in with an existing Google account.
+4. Set up your billing information to access the free tier and free credits.
+
+## Step 2: Set Up a New Project
+
+1. Once logged into the GCP Console, click on the **Select a project** dropdown at the top of the page.
+2. Click on **New Project**.
+3. Enter a project name, select a billing account, and choose a location.
+4. Click on **Create**.
+
+## Step 3: Enable the Kubernetes Engine API
+
+1. In the GCP Console, go to the **Navigation menu** > **API & Services** > **Library**.
+2. Search for **Kubernetes Engine API**.
+3. Click on **Kubernetes Engine API** and then click on **Enable**.
+
+## Step 4: Ensure Necessary Permissions
+
+1. As the owner of the project, you already have the necessary permissions to manage Artifact Registry repositories.
+   If you are using a different account, ensure that it has the **Editor** role at the project level.
+
+## Step 5: Install and Configure Google Cloud SDK (gcloud CLI)
+
+1. Download and install the [Google Cloud SDK](https://cloud.google.com/sdk/docs/install).
+2. Open a terminal or command prompt.
+3. Initialize the SDK with the following command:
+   ```
+   gcloud init
+   ```
+4. Follow the on-screen prompts to log in with your Google account and set the default project.
+
+## Step 6: Authenticate the CLI Using Application-Default Login
+
+1. Authenticate the gcloud CLI with your user account:
+   ```
+   gcloud auth application-default login
+   ```
+   Follow the on-screen prompts to log in with your Google account. This command sets up application-default credentials for the CLI.
+
+## Step 7: Create a Kubernetes Cluster
+
+1. Verify that the CLI is authenticated and can access the project:
+   ```
+   gcloud auth list
+   ```
+2. Verify that the Kubernetes Engine API is enabled:
+   ```
+   gcloud services list --enabled | grep container.googleapis.com
+   ```
+You should see the following:
+
+```
+   container.googleapis.com            Kubernetes Engine API
+```
+
+3. Ensure that you have the correct quotas set to create a new cluster. By default SSD_TOTAL_GB is set to 500 and a k8s cluster requies 900/
+
+3a. Go to your [console admin quotas](https://console.cloud.google.com/iam-admin/quotas) to see a list of your current limits.
+
+3b. Type `ssd` into the **Filter** search bar right above the quotas.
+
+3. Create a new Kubernetes cluster:
+
+   ```
+   gcloud container clusters create CLUSTER_NAME --zone ZONE
+   ```
+
+   Replace `CLUSTER_NAME`with the desired name of your cluster and`ZONE` with your preferred GCP zone.
+
+   To see a list of existing zones type `gcloud compute zones list`
+
+## Step 8: Configure kubectl to Connect to Your Cluster
+
+1. Get the credentials for your new cluster:
+
+   ```
+   gcloud container clusters get-credentials CLUSTER_NAME --zone ZONE
+   ```
+
+   Replace `CLUSTER_NAME`and`ZONE` with the same values you used when creating the cluster.
+
+2. Verify that `kubectl` is configured correctly:
+   ```
+   kubectl get nodes
+   ```
+   This command should return a list of nodes in your cluster.
+
+## Additional Considerations: Quotas
+
+By default, GCP provides sufficient quotas for most users. However, if you need to increase quotas for your project:
+
+1. Go to the **Navigation menu** > **IAM & Admin** > **Quotas**.
+2. Filter by the quota you need to increase (e.g., `In-use IP addresses in region`).
+3. Select the quota and click on **Edit Quotas**.
+4. Fill out the request form and submit it. Google will review your request and notify you of the outcome.
+
+## Conclusion
+
+You have now successfully created a GCP account, set up the necessary permissions, and configured the CLI to create and manage a Kubernetes cluster.
+For more advanced configurations and management, refer to the [GCP documentation](https://cloud.google.com/docs).
+
+Now run an agent on Kubernetes
+
+```
+surfkit create agent -t pbarker/SurfPizza --runtime kube
+```

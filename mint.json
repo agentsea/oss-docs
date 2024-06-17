@@ -46,12 +46,21 @@
       "pages": [
         "introduction",
         "quickstart",
-        "configuration",
         "advanced_tutorial"
       ]
     },
     {
-      "group": "SurfKit",
+      "group": "Configuration",
+      "pages": [
+        "configuration/intro",
+        "configuration/gcp",
+        "configuration/aws",
+        "configuration/k8s",
+        "configuration/docker"
+      ]
+    },
+    {
+      "group": "Package: SurfKit",
       "pages": [
         "surfkit/intro",
         "surfkit/cli",
@@ -59,14 +68,14 @@
       ]
     },
     {
-      "group": "Taskara",
+      "group": "Package: Taskara",
       "pages": [
         "taskara/intro",
         "taskara/repo"
       ]
     },
     {
-      "group": "AgentDesk",
+      "group": "Package: AgentDesk",
       "pages": [
         "agentdesk/intro",
         "agentdesk/demo",
@@ -77,7 +86,7 @@
       ]
     },
     {
-      "group": "AgentD",
+      "group": "Package: AgentD",
       "pages": [
         "agentd/intro",
         "agentd/installation",
@@ -86,7 +95,7 @@
       ]
     },
     {
-      "group": "ToolFuse",
+      "group": "Package: ToolFuse",
       "pages": [
         "toolfuse/intro",
         "toolfuse/weather_agent",
@@ -95,8 +104,12 @@
       ]
     },
     {
-      "group": "ThreadMem",
-      "pages": ["threadmem/intro", "threadmem/api", "threadmem/repo"]
+      "group": "Package: ThreadMem",
+      "pages": [
+        "threadmem/intro", 
+        "threadmem/api", 
+        "threadmem/repo"
+      ]
     }
   ],
   "footerSocials": {

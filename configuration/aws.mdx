@@ -1,0 +1,70 @@
+---
+title: Configure AWS to create desktop VMs
+icon: aws
+---
+
+Agents are designed to be capable of operating on desktop VMs. Running a full VM locally can consume a fair amount of resources, it's
+often preferred to run the VM in the cloud. This section will walk you through how to set up a AWS account from scratch to run a VM.
+
+## Prerequisites
+
+- A valid email address
+- A credit card for billing (AWS offers a free tier for new users)
+
+## Step 1: Create an AWS Account
+
+1. Go to the [AWS](https://aws.amazon.com/) website.
+2. Click on the **Create an AWS Account** button.
+3. Follow the on-screen instructions to create a new AWS account.
+4. Set up your billing information to access the free tier.
+
+## Step 2: Create Access Keys for Your IAM User
+
+1. Sign in to the [AWS Management Console](https://aws.amazon.com/console/).
+2. Go to the **IAM** service from the Services menu.
+3. Click on **Users** in the left-hand menu.
+4. Select your user name from the list.
+5. Click on the **Security credentials** tab.
+6. Scroll down to the **Access keys** section and click on **Create access key**.
+7. Download the CSV file containing the user’s access key ID and secret access key.
+
+## Step 3: Install and Configure AWS CLI
+
+1. Download and install the [AWS CLI](https://aws.amazon.com/cli/).
+2. Open a terminal or command prompt.
+3. Configure the AWS CLI with your user’s access key ID and secret access key:
+   ```
+   aws configure
+   ```
+   Follow the prompts to enter your access key ID, secret access key, default region name, and default output format.
+
+## Step 4: Verify Permissions and Create an EC2 Instance
+
+1. Verify that the CLI is authenticated and can access the EC2 service:
+   ```
+   aws ec2 describe-instances
+   ```
+
+## Additional Considerations: Quotas
+
+By default, AWS provides sufficient quotas for most users. However, if you need to increase quotas for your account:
+
+1. Go to the **Service Quotas** service from the Services menu.
+2. Find the quota you need to increase (e.g., `Running On-Demand Standard (A, C, D, H, I, M, R, T, Z) instances`).
+3. Click on the quota, then click on **Request quota increase**.
+4. Fill out the request form and submit it. AWS will review your request and notify you of the outcome.
+
+## Conclusion
+
+You have now successfully created an AWS account, set up the necessary permissions, and authenticated the CLI to create EC2 instances.
+For more advanced configurations and management, refer to the [AWS documentation](https://docs.aws.amazon.com/).
+
+If you have not already run through our [Quickstart](https://docs.hub.agentsea.ai/quickstart) to setup surfkit, please do that now. 
+
+Once you've done that, you're ready to create an AWS cloud VM for an agent to use with the following command:
+
+   ```
+      surfkit create device --provider gce -n my-surfkit-vm
+   ```
+
+Replace `my-surfkit-vm` with whatever friendly name you want to use.

@@ -1,0 +1,138 @@
+---
+title: Configure GCP to create desktop VMs
+icon: google
+---
+
+Agents are designed to be capable of operating on desktop VMs. Running a full VM locally can consume a fair amount of resources, it's
+often preferred to run the VM in the cloud. This section will walk you through how to set up a GCP account from scratch to run a VM.
+
+## Prerequisites
+
+- A valid email address
+- A credit card for billing (GCP offers a free tier and $300 in free credits for new users)
+
+## Step 1: Create a GCP Account
+
+1. Go to the [Google Cloud Platform](https://cloud.google.com/) website.
+2. Click on the **Get started for free** button.
+3. Follow the on-screen instructions to create a new Google account or sign in with an existing Google account.
+4. Set up your billing information to access the free tier and free credits.
+
+## Step 2: Set Up a New Project
+
+1. Once logged into the GCP Console, click on the **Select a project** dropdown at the top of the page.
+2. Click on **New Project**.
+3. Enter a project name, select a billing account, and choose a location.
+4. Click on **Create**.
+
+## Step 3: Enable the Compute Engine API
+
+1. In the GCP Console, go to the **Navigation menu** > **API & Services** > **Library**.
+2. Search for **Compute Engine API**.
+3. Click on **Compute Engine API** and then click on **Enable**.
+
+## Step 4: Ensure Necessary Permissions
+
+1. As the owner of the project, you already have the necessary permissions to manage Artifact Registry repositories.
+   If you are using a different account, ensure that it has the **Editor** role at the project level.
+
+## Step 5: Install and Configure Google Cloud SDK (gcloud CLI)
+
+1. Download and install the [Google Cloud SDK](https://cloud.google.com/sdk/docs/install).
+2. Open a terminal or command prompt.
+3. Initialize the SDK with the following command:
+   ```sh
+   gcloud init
+   ```
+4. Follow the on-screen prompts to log in with your Google account and set the default project.
+
+**NOTE:** If you already have other gcloud accounts configured for your work or for other projects you should see something like the following:
+
+   ```
+   Settings from your current configuration [default] are:
+   container:
+      cluster: surfkit-demo
+   core:
+      account: roko@basalisk.ai
+      disable_usage_reporting: 'False'
+      project: some-project
+
+   Pick configuration to use:
+      [1] Re-initialize this configuration [default] with new settings
+      [2] Create a new configuration
+      [3] Switch to and re-initialize existing configuration: [surfkit-demo]
+   ``` 
+The easiest is to **choose [2] to create a new configuration which will you keep your old configurations.** However, if you do not wish to keep old accounts you can choose to [1] to re-initialize the settings.
+
+If you choose two you will be prompted to name the configuration, so name it something clear to differentiate it from other configs and then you should see the following:
+
+   ```
+   Choose the account you would like to use to perform operations for this configuration:
+      [1] roko@basalisk.ai
+      [2] Log in with a new account
+   Please enter your numeric choice:  2
+   ```
+
+Choose 2 and you will be redirected to your browser to click through the authentication with your Google enabled email account and password.
+
+At the end of the of the configuration process you should see an asterix next to your new email address to indicate that it is the default for logging into gcloud.
+
+You may run `gcloud config configurations list` to see the list of configurations available and then `gcloud config configurations activate NAME`, where **NAME** is the friendly name you have choosen for any given account in the first column of the list.
+
+## Step 6: Authenticate the CLI Using Application-Default Login
+
+1. Authenticate the gcloud CLI with your user account:
+   ```sh
+   gcloud auth application-default login
+   ```
+   Follow the on-screen prompts to log in with your Google account. This command sets up application-default credentials for the CLI.
+
+### Step 7: Verify Permissions and Create a GCE VM Instance
+
+1. Verify that the CLI is authenticated and can access the project:
+   ```
+   gcloud auth list
+   ```
+If this is your first GCP account, you will see only one account listed. If you have multiple, you will see an `*` next to the active account like so:
+
+   ```
+         Credentialed Accounts
+   ACTIVE   ACCOUNT
+            roko@basalisk.ai
+   *        eyudkowsky@maxpaperclips.org
+   ```
+
+2. Verify that the Compute Engine API is enabled:
+   ```
+   gcloud services list --enabled | grep compute.googleapis.com
+   ```
+You should see the following:
+
+   ```
+   compute.googleapis.com              Compute Engine API
+   ```
+
+
+### Additional Considerations: Quotas
+
+By default, GCP provides sufficient quotas for most users. However, if you need to increase quotas for your project:
+
+1. Go to the **Navigation menu** > **IAM & Admin** > **Quotas**.
+2. Filter by the quota you need to increase (e.g., `CPUs`).
+3. Select the quota and click on **Edit Quotas**.
+4. Fill out the request form and submit it. Google will review your request and notify you of the outcome.
+
+### Conclusion
+
+You have now successfully created a GCP account, set up the necessary permissions, and authenticated the CLI using application-default login to create GCE VM instances.
+For more advanced configurations and management, refer to the [GCP documentation](https://cloud.google.com/docs).
+
+If you have not already run through our [Quickstart](https://docs.hub.agentsea.ai/quickstart) to setup surfkit, please do that now. 
+
+Once you've done that, you're ready to create a GCP cloud VM for an agent to use with the following command:
+
+   ```
+      surfkit create device --provider gce -n my-surfkit-vm
+   ```
+
+Replace `my-surfkit-vm` with whatever friendly name you want to use.
