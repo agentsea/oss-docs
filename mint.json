@@ -53,6 +53,7 @@
       "group": "Configuration",
       "pages": [
         "configuration/intro",
+        "configuration/qemu",
         "configuration/gcp",
         "configuration/aws",
         "configuration/k8s",
