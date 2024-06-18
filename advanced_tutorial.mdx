@@ -4,7 +4,7 @@ description: A detailed guide from zero to GUI surfer with multiple approaches
 icon: screwdriver-wrench
 ---
 
-In this guide, we'll show how to create your own agent using surfkit and some of the techniques we came up along the way to help your agent navigate GUIs and accomplish its goals. 
+In this guide, we'll show how to create your own agent using SurfKit and some of the techniques we came up along the way to help your agent navigate GUIs and accomplish its goals. 
 
 ## Prerequisites
 
@@ -80,7 +80,7 @@ Let's briefly look inside the repo. There are a bunch of files there, but the mo
 ### Architecture
 
 This type of agent works with a Desktop device. The Desktop device has an interface 
-that allows it to control the VM (in the cloud or a local one) via a mouse and a keyboard programmatically. You just created it above with `surfkit create device`.
+that allows it to control the VM (in the cloud or a local one) via a mouse and a keyboard programmatically. You've just created it above with `surfkit create device`.
 
 When the agent works to solve a given task, it uses the device. The device implements 
 the `Tool` interface and therefore has a schema of actions that the agent can take at any give time. We get this schema in JSON format, 
