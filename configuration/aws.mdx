@@ -59,12 +59,12 @@ By default, AWS provides sufficient quotas for most users. However, if you need 
 You have now successfully created an AWS account, set up the necessary permissions, and authenticated the CLI to create EC2 instances.
 For more advanced configurations and management, refer to the [AWS documentation](https://docs.aws.amazon.com/).
 
-If you have not already run through our [Quickstart](https://docs.hub.agentsea.ai/quickstart) to setup surfkit, please do that now. 
+If you have not already run through our [Quickstart](https://docs.hub.agentsea.ai/quickstart) to setup surfkit, please do that now.
 
 Once you've done that, you're ready to create an AWS cloud VM for an agent to use with the following command:
 
-   ```
-      surfkit create device --provider gce -n my-surfkit-vm
-   ```
+```
+   surfkit create device --provider ec2 -n my-surfkit-vm
+```
 
 Replace `my-surfkit-vm` with whatever friendly name you want to use.

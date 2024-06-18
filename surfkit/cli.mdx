@@ -3,63 +3,18 @@ title: CLI Documentation
 icon: code
 ---
 
-**Disclaimer**: This documentation page is incomplete. Our docs agents are working hard on it. In the meantime, please use surfkit --help to get full information about the available commands!
+<Warning>
+  {" "}
+  This documentation page is incomplete. Our docs agents are working hard on it.
+  In the meantime, please use surfkit --help to get full information about the available
+  commands
+</Warning>
 
 ## Installation
 
 ```
 pip install surfkit
 ```
-
-## Managing Devices
-
-### Create an Agent
-
-Find available agents on the Hub
-
-```
-surfkit find
-```
-
-Create a new agent
-
-```
-surfkit create agent -t pbarker/SurfPizza -n agent01
-```
-
-List running agents
-
-```
-surfkit list agents
-```
-
-### Create a Device
-
-Create an Ubuntu desktop for our agent to use.
-
-```
-surfkit create device --provider qemu -n desktop01
-```
-
-List running devices
-
-```
-surfkit list devices
-```
-
-### Solve a task
-
-Use the agent to solve a task on the device
-
-```
-surfkit solve "Search for the most common variety of french duck" \
-  --agent agent01 \
-  --device desktop01
-```
-
-## Documentation
-
-View our [documentation](https://docs.hub.agentsea.ai) for more in depth information.
 
 ## Usage
 
