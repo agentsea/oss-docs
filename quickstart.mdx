@@ -134,7 +134,7 @@ surfkit list devices
 
 ## Create a Tracker
 
-Before solving a task, we have the choice to create a [tracker](/taskara/intro#tracker), which is a task server.
+Before solving a task, we have the choice to create a [tracker](/taskara/intro#tracker), which is a task server that tracks tasks for us in a Docker container.
 
 ```
 surfkit create tracker -n tracker01 -r docker
@@ -151,11 +151,11 @@ surfkit solve "Search for the most common variety of french duck" \
   --tracker tracker01
 ```
 
-_* Note: if a tracker is not created explicitly created beforehand and passed on to the `solve` command via the `--tracker` flag, `surfkit` will ask if you want to create one automatically._
+_* Note: If you don't create tracker explicitly before launching an agent, which you pass to the `solve` command via the `--tracker` flag, `surfkit` will ask if you want to create a tracker automatically._
 
 ## What's next
 
-Now that you have a feel for the basics, you can learn more about the tools surfkit provides.
+Now that you have a feel for the basics, you can move on to more advanced topics, like learning about all the tools in the surfkit or creating your own agent.
 
 <CardGroup>
 
