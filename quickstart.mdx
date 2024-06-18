@@ -8,10 +8,10 @@ icon: rocket
 
 These are the basic steps to getting up and running:
 
-1) Install surfkit
-2) Create an agent instance
-3) Create a device
-4) Launch your agent to solve a task
+1. Install surfkit
+2. Create an agent instance
+3. Create a device
+4. Launch your agent to solve a task
 
 ## Prerequisites
 
@@ -19,8 +19,12 @@ These are the basic steps to getting up and running:
 - Python >= 3.10
 - MacOS or Linux
 
-**Note:** If you are using Docker Desktop on MacOS, please update the settings: go to `Settings | Advanced` and make sure that
-the checkbox `Allow the default Docker socket to be used (requires password)` is checked. Save the settings, apply and restart.
+<Note>
+  {" "}
+  If you are using Docker Desktop on MacOS, please update the settings: go to `Settings
+  | Advanced` and make sure that the checkbox `Allow the default Docker socket to
+  be used (requires password)` is checked. Save the settings, apply and restart.{" "}
+</Note>
 
 ## Install Surfkit
 
@@ -82,7 +86,7 @@ surfkit logs agent <name> --follow
 
 ## Create a Device
 
-Now that we've installed our agent, we need to give it a device to use. 
+Now that we've installed our agent, we need to give it a device to use.
 
 The fastest way to get up and running is to install QEMU, but the most scalable is to create devices in GCP or AWS.
 
@@ -108,8 +112,7 @@ __Requirements__
 surfkit create device --provider gce -n desktop01
 ```
 
-_* Read [this](/configuration/gcp) for more details on how to configure GCE to create desktop VMs_
-
+_\* Read [this](/configuration/gcp) for more details on how to configure GCE to create desktop VMs_
 
 </Accordion>
 <Accordion icon="aws" title="Create a desktop on EC2">
@@ -120,7 +123,7 @@ __Requirements__
 surfkit create device --provider ec2 -n desktop01
 ```
 
-_* Read [this](/configuration/aws) for more details on how to configure AWS to create desktop VMs_
+_\* Read [this](/configuration/aws) for more details on how to configure AWS to create desktop VMs_
 
 </Accordion>
 
@@ -151,7 +154,12 @@ surfkit solve "Search for the most common variety of french duck" \
   --tracker tracker01
 ```
 
-_* Note: If you don't create tracker explicitly before launching an agent, which you pass to the `solve` command via the `--tracker` flag, `surfkit` will ask if you want to create a tracker automatically._
+<Note>
+  {" "}
+  If you don't create tracker explicitly before launching an agent, which you pass
+  to the `solve` command via the `--tracker` flag, `surfkit` will ask if you want
+  to create a tracker automatically.
+</Note>
 
 ## What's next
 
@@ -159,7 +167,11 @@ Now that you have a feel for the basics, you can move on to more advanced topics
 
 <CardGroup>
 
-<Card title="Create an Agent" icon="screwdriver-wrench" href="/advanced_tutorial">
+<Card
+  title="Create an Agent"
+  icon="screwdriver-wrench"
+  href="/advanced_tutorial"
+>
   Create your own agent
 </Card>
 
