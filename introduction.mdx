@@ -19,49 +19,61 @@ icon: hand-wave
 
 ## Introduction
 
-The platform delivers a collection of libraries and tools for building AI agent apps. We favor the UNIX philosophy of do one thing and do it well. That makes our tools easy to use, easy to extend, and easy to mix and match. Use the tools one by one or stack them together into a single agent app.
+The AgentSea platform delivers a collection of libraries and tools for building AI agent apps.
+We favor the UNIX philosophy of do one thing and do it well. Making our tools easy to use, easy to extend, and easy to mix and match. Use the tools one by one or stack them together into a single agent app.
 
-You can also use our tools with other popular frameworks like LlamaIndex and LangChain.  
+You can also use our tools with other popular frameworks like LlamaIndex and LangChain.
 
-Our current projects:
+Our tools ▼
 
-* `SurfKit`: an orchestartor for building and launching agents locally, in a docker container or in the cloud. Think of it as k8s for agents.
-* `DeviceBay`: DeviceBay offers pluggable devices ready to be used by AI agents, complete with a UI experience.
-* `ToolFuse`: a library that wraps up scripts, 3rd party apps and APIs as ``Tool`` implementations for agents.
-* `AgentD`: a powerful daemon that makes a Linux desktop OS accessible to your bot, like a remote desktop app but where the agent takes all the actions.
-* `AgentDesk`: a library for running ``AgentD`` powered VMs as ``Tool`` instances.
-* `Taskara`: Task management for your agentic systems. 
-* `ThreadMem`: a library for building multi-role persistent threads that keep track of all the messages and dialogues with your agents.
+- [SurfKit](https://github.com/agentsea/surfkit) an orchestartor for building and launching agents locally, in a docker container or in the cloud. Think of it as k8s for agents.
+- [DeviceBay](https://github.com/agentsea/devicebay) DeviceBay offers pluggable devices ready to be used by AI agents, complete with a UI experience.
+- [ToolFuse](https://github.com/agentsea/toolfuse) a library that wraps up scripts, 3rd party apps and APIs as `Tool` implementations for agents.
+- [AgentD](https://github.com/agentsea/agentd) a powerful daemon that makes a Linux desktop OS accessible to your bot, like a remote desktop app but where the agent takes all the actions.
+- [AgentDesk](https://github.com/agentsea/agentdesk) a library for running `AgentD` powered VMs as `Tool` instances on any cloud.
+- [Taskara](https://github.com/agentsea/taskara) Task management for your agentic systems.
+- [ThreadMem](https://github.com/agentsea/threadmem) a library for building multi-role persistent threads that keep track of all the messages and dialogues with your agents.
 
-Build your own agent or use all our tools together with your premade alpha agents. Our prototypes use a combo of old school computer vision techniques and some new tricks of our own applied AI methods, mashed up with multimodal models and our tools:
+Build your own agent or use our alpha agents. Our initial batch of agents focus on multimodal navigation of GUI interfaces.
+Our prototypes use a combo of old school computer vision techniques and some new tricks of our own applied AI methods.
 
-* `SurfPizza`: an agent that explores by slicing up the screen and returning a composite to the multimodal model so it can pick where to go next.
-* `SurfSlicer`: divides up the screen into dots that signify regions and the multimodal model picks the dot closest to what it's looking for and then zooms in and does it again, zeroing in on its target.
-* `SurfNinja`: A precision based second gen AI agent.
-* `SurfMonsta`: Our best performing agent: It combines a number of our techniques, like SurfSlicer regions, the SAM model for bounding and segmenting a GUI, OCR for text positioning and a GAN for upscaling smaller slices of images to give the multimodal model the best resolution.
+Our agents ▼
 
-**The AgentSea platform is currently in open beta release.**  
+- [SurfPizza](https://github.com/agentsea/surfpizza) an agent that explores by slicing up the screen and returning a composite to the multimodal model so it can pick where to go next.
+- [SurfSlicer](https://github.com/agentsea/surfslicer) divides up the screen into dots that signify regions and the multimodal model picks the dot closest to what it's looking for and then zooms in and does it again, zeroing in on its target.
+- [SurfNinja](https://github.com/agentsea/surfninja) A precision based second gen AI agent.
+- [SurfMonsta](https://github.com/agentsea/surfmonsta) Our best performing agent: It combines a number of our techniques, like SurfSlicer regions, the SAM model for bounding and segmenting a GUI, OCR for text positioning and a GAN for upscaling smaller slices of images to give the multimodal model the best resolution.
+
+## Demo
+
+<iframe
+  width="560"
+  height="315"
+  src="https://www.youtube.com/watch?v=exoOUUwFRB8"
+  title="YouTube video player"
+  frameborder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowfullscreen
+></iframe>
+
+**The AgentSea platform is currently in open beta release.**
 
 The overall framework is solid and getting stronger every day.
 
-**All of our agents are *alpha* releases.**  
+**All of our agents are _alpha_ releases.**
 
-They sometimes work like magic and other times they struggle badly and make frustrating mistakes.  See them as proof of concepts to expand on and iterate on and you'll have a strong base of ideas to build your own agents on. We're improving them every day and we'll continue to release new and improved agents as we develop them.  
+They sometimes work like magic and other times they struggle badly and make frustrating mistakes. See them as proof of concepts to expand on and iterate on and you'll have a strong base of ideas to build your own agents on. We're improving them every day and we'll continue to release new and improved agents as we develop them.
 
-All the tools are free to use and licensed under the MIT License. 
+All the tools are free to use and licensed under the MIT License.
 
-Insterested in helping? Great! We love contributions. If you've got ideas, bug reports, or code contributions, please open an issue or a pull request in the right repo.  
+Insterested in helping? Great! We love contributions. If you've got ideas, bug reports, or code contributions, please open an issue or a pull request in the right repo.
 
 Let's work together and build better agents now.
 
 ## Explore
 
 <CardGroup cols={2}>
-  <Card
-    title="Quickstart"
-    icon="rocket"
-    href="./quickstart"
-  >
+  <Card title="Quickstart" icon="rocket" href="./quickstart">
     Follow our handy Quickstart to get an agent up and running in under 5 mins.
   </Card>
   <Card
@@ -69,7 +81,8 @@ Let's work together and build better agents now.
     icon="sign-posts-wrench"
     href="./configuration/intro"
   >
-    Follow the instructions to set up GCP, AWS, and K8s to be used with our agents.
+    Follow the instructions to set up GCP, AWS, and K8s to be used with our
+    agents.
   </Card>
   <Card
     title="Build your Agent"
@@ -78,11 +91,7 @@ Let's work together and build better agents now.
   >
     Learn how to build your own agent in our comprehensive tutorial.
   </Card>
-  <Card 
-    title="Surfkit Documentation" 
-    icon="book" 
-    href="surfkit/intro"
-  >
-    Learn more about our projects. 
+  <Card title="Surfkit Documentation" icon="book" href="surfkit/intro">
+    Learn more about our projects.
   </Card>
 </CardGroup>

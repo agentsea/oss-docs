@@ -1,5 +1,5 @@
 ---
-title: CLI Documentation
+title: (REVIEW) CLI Documentation
 icon: code
 ---
 
@@ -13,154 +13,191 @@ pip install surfkit
 
 ## Managing Devices
 
-### Create a device
+### Create an Agent
 
-Note: Providers could be qemu for local or gce for the GCP cloud or aws for Amazon cloud. 
+Find available agents on the Hub
 
-```sh
-surfkit create device --type desktop --provider qemu --name bar
+```
+surfkit find
 ```
 
-### List devices
+Create a new agent
 
-```sh
-surfkit list devices
+```
+surfkit create agent -t pbarker/SurfPizza -n agent01
 ```
 
-### View device in UI
+List running agents
 
-```sh
-surfkit view --name bar
 ```
-
-### Delete a device
-
-```sh
-surfkit delete device --name bar
-```
-
-## Tracking Tasks
-
-### Create a tracker
-
-```sh
-surfkit create tracker
-```
-
-### List trackers
-
-```sh
-surfkit list trackers
-```
-
-### Delete a tracker
-
-```sh
-surfkit delete tracker -n foo
-```
-
-## Running Agents
-
-### Create an agent locally
-
-```sh
-surfkit create agent --name foo
-```
-
-### Create an agent on K8s
-
-```sh
-surfkit create agent --runtime kube
-```
-
-### List running agents
-
-```sh
 surfkit list agents
 ```
 
-### Get details about a specific agent
+### Create a Device
 
-```sh
-surfkit get agent --name foo
+Create an Ubuntu desktop for our agent to use.
+
+```
+surfkit create device --provider qemu -n desktop01
 ```
 
-### Fetch logs for a specific agent
+List running devices
 
-```sh
-surfkit logs --name foo
+```
+surfkit list devices
 ```
 
-### Delete an agent
+### Solve a task
 
-```sh
-surfkit delete agent --name foo
+Use the agent to solve a task on the device
+
+```
+surfkit solve "Search for the most common variety of french duck" \
+  --agent agent01 \
+  --device desktop01
 ```
 
-## Solving Tasks
+## Documentation
 
-### Solve a task with an existing setup
+View our [documentation](https://docs.hub.agentsea.ai) for more in depth information.
 
-```sh
-surfkit solve --description "search for common french ducks" --agent foo --device bar
+## Usage
+
+### Building Agents
+
+Initialize a new project
+
+```
+surfkit new
 ```
 
-### Solve a task creating the agent ad hoc
+Build a docker container for the agent
 
-```sh
-surfkit solve --description "search for alpaca sweaters" \
---device bar --agent-file ./agent.yaml
 ```
-
-### Solve a task and kill the agent post-execution
-
-```sh
-surfkit solve --description "search for the meaning of life" \
---device bar --agent-file ./agent.yaml --kill
-```
-
-### List tasks
-
-```sh
-surfkit list tasks
-```
-
-## Building Agents
-
-### Initialize a new project
-
-```sh
-surfkit new [NAME]
-```
-
-### Build a docker container for the agent
-
-```sh
 surfkit build
 ```
 
-## Publishing Agents
+### Running Agents
 
-### Login to the Hub
+Create an agent locally
 
-```sh
+```
+surfkit create agent --name foo -t pbarker/SurfPizza
+```
+
+Create an agent on kubernetes
+
+```
+surfkit create agent --runtime kube -t pbarker/SurfPizza
+```
+
+List running agents
+
+```
+surfkit list agents
+```
+
+Get details about a specific agent
+
+```
+surfkit get agent foo
+```
+
+Fetch logs for a specific agent
+
+```
+surfkit logs foo
+```
+
+Delete an agent
+
+```
+surfkit delete agent foo
+```
+
+### Managing Devices
+
+Create a device
+
+```
+surfkit create device --type desktop --provicer gce --name bar
+```
+
+List devices
+
+```
+surfkit list devices
+```
+
+View device in UI
+
+```
+surfkit view bar
+```
+
+Delete a device
+
+```
+surfkit delete device bar
+```
+
+### Tracking Tasks
+
+Create a tracker
+
+```
+surfkit create tracker
+```
+
+List trackers
+
+```
+surfkit list trackers
+```
+
+Delete a tracker
+
+```
+surfkit delete tracker foo
+```
+
+### Solving Tasks
+
+Solve a task with an existing setup
+
+```
+surfkit solve "search for common french ducks" --agent foo --device bar
+```
+
+Solve a task creating the agent ad hoc
+
+```
+surfkit solve "search for alpaca sweaters" \
+--device bar --agent-file ./agent.yaml
+```
+
+List tasks
+
+```
+surfkit list tasks
+```
+
+### Publishing Agents
+
+Login to the hub
+
+```
 surfkit login
 ```
 
-### Publish the agent
+Publish the agent
 
-```sh
+```
 surfkit publish
 ```
 
-### List published agent types
+List published agent types
 
-```sh
-surfkit list types
 ```
-
-### Run a published agent
-
-```sh
-surfkit create agent --type SurfPizza --runtime kube
+surfkit find
 ```
