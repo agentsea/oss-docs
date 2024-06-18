@@ -5,7 +5,7 @@
     "dark": "/logo/logo_white.png",
     "light": "/logo/logo_black.png"
   },
-  "favicon": "/logo/favicon.svg",
+  "favicon": "/logo/logo-black-with-white-favicon.svg",
   "colors": {
     "primary": "#175fe8",
     "light": "#175fe8",
@@ -43,11 +43,7 @@
   "navigation": [
     {
       "group": "Getting Started",
-      "pages": [
-        "introduction",
-        "quickstart",
-        "advanced_tutorial"
-      ]
+      "pages": ["introduction", "quickstart", "advanced_tutorial"]
     },
     {
       "group": "Configuration",
@@ -62,18 +58,11 @@
     },
     {
       "group": "Package: SurfKit",
-      "pages": [
-        "surfkit/intro",
-        "surfkit/cli",
-        "surfkit/repo"
-      ]
+      "pages": ["surfkit/intro", "surfkit/cli", "surfkit/repo"]
     },
     {
       "group": "Package: Taskara",
-      "pages": [
-        "taskara/intro",
-        "taskara/repo"
-      ]
+      "pages": ["taskara/intro", "taskara/repo"]
     },
     {
       "group": "Package: AgentDesk",
@@ -106,11 +95,7 @@
     },
     {
       "group": "Package: ThreadMem",
-      "pages": [
-        "threadmem/intro", 
-        "threadmem/api", 
-        "threadmem/repo"
-      ]
+      "pages": ["threadmem/intro", "threadmem/api", "threadmem/repo"]
     }
   ],
   "footerSocials": {
