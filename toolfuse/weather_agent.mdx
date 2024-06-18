@@ -53,7 +53,7 @@ Pretty trivial, as you can see.
 
 ## Communication with LLM
 
-The interesting part though is not really the ability to use weather API and write to files, but to use this class to give an LLM with a new skill. All we have to do is get the schema of the tool actions and observations and give them to our LLM like this: 
+The interesting part though is not really the ability to use weather API and write to files, but to use this class to give an LLM a new skill. All we have to do is get the schema of the tool actions and observations and give them to our LLM like this: 
 
 ```python
 schema = tool.json_schema()
