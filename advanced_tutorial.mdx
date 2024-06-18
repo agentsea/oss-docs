@@ -17,7 +17,7 @@ In this guide, we'll show how to create your own agent using SurfKit and some of
 
 Creating a dummy agent that follows the SurfKit protocol is super easy:
 
-```bash
+```
 mkdir surfhamster && cd surfhamster
 surfkit new
 ```
@@ -34,19 +34,19 @@ Enter icon url (https://tinyurl.com/y5u4u7te):
 
 Feel free to leave the docker image repo empty for now and use a standard icon. When you run these commands, an Agent project will get initialized inside the folder you created. It contains all the components you need to give it a try:
 
-```bash
+```
 surfkit create tracker -n hound001 -r docker
 ```
 
-```bash
+```
 surfkit create device -n eve001 -p qemu
 ```
 
-```bash
+```
 surfkit create agent -n robby001 -r process
 ```
 
-```bash
+```
 surfkit solve "Find a cool cat image in the internet" \
     --agent robby001 --device eve001 --tracker hound001 \
     --starting-url "google.com"
@@ -137,19 +137,19 @@ See the full code for `tool.py` [here](https://github.com/agentsea/surfhamster/b
 The most interesting part of this class is that we add a new method, `click_object`:
 
 ```python
-    @action
-    def click_object(self, description: str, type: str) -> None:
-        """Click on an object on the screen
+@action
+def click_object(self, description: str, type: str) -> None:
+    """Click on an object on the screen
 
-        Args:
-            description (str): The description of the object including its general location, for example
-                "a round dark blue icon with the text 'Home' in the top-right of the image", please be a generic as possible
-            type (str): Type of click, can be 'single' for a single click or
-                'double' for a double click. If you need to launch an application from the desktop choose 'double'
-        """
-        info = self.desktop.info()
-        screen_size = info["screen_size"]
-        self._click_coords(screen_size["x"] // 2, screen_size["y"] // 2, "single")
+    Args:
+        description (str): The description of the object including its general location, for example
+            "a round dark blue icon with the text 'Home' in the top-right of the image", please be a generic as possible
+        type (str): Type of click, can be 'single' for a single click or
+            'double' for a double click. If you need to launch an application from the desktop choose 'double'
+    """
+    info = self.desktop.info()
+    screen_size = info["screen_size"]
+    self._click_coords(screen_size["x"] // 2, screen_size["y"] // 2, "single")
 ```
 
 As you can see, it is not so smart at the moment: it simply returns the coordinates in middle of the screen. Don't worry, we'll work on it later!
@@ -162,17 +162,17 @@ device, but not all of them. The best way to explain it is that we get observati
 We also remove some actions we don't need our agent to know:
 
 ```python
-        tools = semdesk.json_schema(
-            exclude_names=[
-                "move_mouse",
-                "click",
-                "drag_mouse",
-                "mouse_coordinates",
-                "take_screenshot",
-                "open_url",
-                "double_click",
-            ]
-        )
+tools = semdesk.json_schema(
+    exclude_names=[
+        "move_mouse",
+        "click",
+        "drag_mouse",
+        "mouse_coordinates",
+        "take_screenshot",
+        "open_url",
+        "double_click",
+    ]
+)
 ```
 
 If you run the agent now, you'll notice in the console logs, that the schema (the available actions) have changed, and the agent can now return a new kind of action:
@@ -220,132 +220,132 @@ First, we need to define a bunch of utility functions to generate this grid, mer
 Now, we can update the `click_object` function to give it some more power and perception:
 
 ```python
-    @action
-    def click_object(self, description: str, type: str) -> None:
-        """Click on an object on the screen
+@action
+def click_object(self, description: str, type: str) -> None:
+    """Click on an object on the screen
 
-        Args:
-            description (str): The description of the object including its general location, for example
-                "a round dark blue icon with the text 'Home' in the top-right of the image", please be a generic as possible
-            type (str): Type of click, can be 'single' for a single click or
-                'double' for a double click. If you need to launch an application from the desktop choose 'double'
-        """
+    Args:
+        description (str): The description of the object including its general location, for example
+            "a round dark blue icon with the text 'Home' in the top-right of the image", please be a generic as possible
+        type (str): Type of click, can be 'single' for a single click or
+            'double' for a double click. If you need to launch an application from the desktop choose 'double'
+    """
 
-        if type != "single" and type != "double":
-            raise ValueError("type must be'single' or 'double'")
+    if type != "single" and type != "double":
+        raise ValueError("type must be'single' or 'double'")
 
-        color_number = os.getenv("COLOR_NUMBER", "yellow")
-        color_circle = os.getenv("COLOR_CIRCLE", "red")
+    color_number = os.getenv("COLOR_NUMBER", "yellow")
+    color_circle = os.getenv("COLOR_CIRCLE", "red")
 
-        click_hash = hashlib.md5(description.encode()).hexdigest()[:5]
+    click_hash = hashlib.md5(description.encode()).hexdigest()[:5]
 
-        class ZoomSelection(BaseModel):
-            """Zoom selection model"""
+    class ZoomSelection(BaseModel):
+        """Zoom selection model"""
 
-            number: int = Field(
-                ...,
-                description=f"Number of the dot closest to the place we want to click.",
-            )
-
-        current_img_b64 = self.desktop.take_screenshot()
-        current_img = b64_to_image(current_img_b64)
-        img_width, img_height = current_img.size
-
-        # number of "cells" along one side; the numbers are in the corners of those "cells"
-        n = 10
-
-        thread = RoleThread()
-
-        prompt = f"""
-        You are an experienced AI trained to find the elements on the screen.
-        You see a screenshot of the web application.
-        I have drawn some big {color_number} numbers on {color_circle} circles on this image
-        to help you to find required elements.
-        Please tell me the closest big {color_number} number on a {color_circle} circle to the center of the {description}.
-        Please note that some circles may lay on the {description}. If that's the case, return the number in any of these circles.
-        Please return you response as raw JSON following the schema {ZoomSelection.model_json_schema()}
-        Be concise and only return the raw json, for example if the circle you wanted to select had a number 3 in it
-        you would return {{"number": 3}}
-        """
-
-        self.task.post_message(
-            role="assistant",
-            msg=f"Clicking '{type}' on object '{description}'",
-            thread="debug",
-            images=[image_to_b64(current_img)],
+        number: int = Field(
+            ...,
+            description=f"Number of the dot closest to the place we want to click.",
         )
 
-        image_path = os.path.join(self.img_path, f"{click_hash}_current.png")
-        current_img.save(image_path)
-        img_width, img_height = current_img.size
+    current_img_b64 = self.desktop.take_screenshot()
+    current_img = b64_to_image(current_img_b64)
+    img_width, img_height = current_img.size
 
-        screenshot_b64 = image_to_b64(current_img)
-        self.task.post_message(
-            role="assistant",
-            msg=f"Current image",
-            thread="debug",
-            images=[screenshot_b64],
-        )
+    # number of "cells" along one side; the numbers are in the corners of those "cells"
+    n = 10
 
-        grid_path = os.path.join(self.img_path, f"{click_hash}_grid.png")
-        create_grid_image(
-            img_width, img_height, color_circle, color_number, n, grid_path
-        )
+    thread = RoleThread()
 
-        merged_image_path = os.path.join(
-            self.img_path, f"{click_hash}_merge.png"
-        )
-        merged_image = superimpose_images(image_path, grid_path, 1)
-        merged_image.save(merged_image_path)
+    prompt = f"""
+    You are an experienced AI trained to find the elements on the screen.
+    You see a screenshot of the web application.
+    I have drawn some big {color_number} numbers on {color_circle} circles on this image
+    to help you to find required elements.
+    Please tell me the closest big {color_number} number on a {color_circle} circle to the center of the {description}.
+    Please note that some circles may lay on the {description}. If that's the case, return the number in any of these circles.
+    Please return you response as raw JSON following the schema {ZoomSelection.model_json_schema()}
+    Be concise and only return the raw json, for example if the circle you wanted to select had a number 3 in it
+    you would return {{"number": 3}}
+    """
 
-        merged_image_b64 = image_to_b64(merged_image)
-        self.task.post_message(
-            role="assistant",
-            msg=f"Merged image",
-            thread="debug",
-            images=[merged_image_b64],
-        )
+    self.task.post_message(
+        role="assistant",
+        msg=f"Clicking '{type}' on object '{description}'",
+        thread="debug",
+        images=[image_to_b64(current_img)],
+    )
 
-        msg = RoleMessage(
-            role="user",
-            text=prompt,
-            images=[merged_image_b64],
-        )
-        thread.add_msg(msg)
+    image_path = os.path.join(self.img_path, f"{click_hash}_current.png")
+    current_img.save(image_path)
+    img_width, img_height = current_img.size
 
-        response = router.chat(
-            thread, namespace="zoom", expect=ZoomSelection, agent_id="SurfHamster", retries=1
-        )
-        if not response.parsed:
-            raise SystemError("No response parsed from zoom")
+    screenshot_b64 = image_to_b64(current_img)
+    self.task.post_message(
+        role="assistant",
+        msg=f"Current image",
+        thread="debug",
+        images=[screenshot_b64],
+    )
 
-        self.task.add_prompt(response.prompt)
+    grid_path = os.path.join(self.img_path, f"{click_hash}_grid.png")
+    create_grid_image(
+        img_width, img_height, color_circle, color_number, n, grid_path
+    )
 
-        zoom_resp = response.parsed
-        self.task.post_message(
-            role="assistant",
-            msg=f"Selection {zoom_resp.model_dump_json()}",
-            thread="debug",
-        )
-        console.print(JSON(zoom_resp.model_dump_json()))
-        chosen_number = zoom_resp.number
+    merged_image_path = os.path.join(
+        self.img_path, f"{click_hash}_merge.png"
+    )
+    merged_image = superimpose_images(image_path, grid_path, 1)
+    merged_image.save(merged_image_path)
 
-        # We convert the chosen number into screen coordinates
-        # of the corresponding dot on the grid
-        x_cell = (chosen_number - 1) // (n - 1) + 1
-        y_cell = (chosen_number - 1) % (n - 1) + 1
-        cell_width = img_width // n
-        cell_height = img_height // n
-        click_x = x_cell * cell_width
-        click_y = y_cell * cell_height
+    merged_image_b64 = image_to_b64(merged_image)
+    self.task.post_message(
+        role="assistant",
+        msg=f"Merged image",
+        thread="debug",
+        images=[merged_image_b64],
+    )
 
-        self.task.post_message(
-            role="assistant",
-            msg=f"Clicking coordinates {click_x}, {click_y}",
-            thread="debug",
-        )
-        self._click_coords(x=click_x, y=click_y, type=type)
-        return
+    msg = RoleMessage(
+        role="user",
+        text=prompt,
+        images=[merged_image_b64],
+    )
+    thread.add_msg(msg)
+
+    response = router.chat(
+        thread, namespace="zoom", expect=ZoomSelection, agent_id="SurfHamster", retries=1
+    )
+    if not response.parsed:
+        raise SystemError("No response parsed from zoom")
+
+    self.task.add_prompt(response.prompt)
+
+    zoom_resp = response.parsed
+    self.task.post_message(
+        role="assistant",
+        msg=f"Selection {zoom_resp.model_dump_json()}",
+        thread="debug",
+    )
+    console.print(JSON(zoom_resp.model_dump_json()))
+    chosen_number = zoom_resp.number
+
+    # We convert the chosen number into screen coordinates
+    # of the corresponding dot on the grid
+    x_cell = (chosen_number - 1) // (n - 1) + 1
+    y_cell = (chosen_number - 1) % (n - 1) + 1
+    cell_width = img_width // n
+    cell_height = img_height // n
+    click_x = x_cell * cell_width
+    click_y = y_cell * cell_height
+
+    self.task.post_message(
+        role="assistant",
+        msg=f"Clicking coordinates {click_x}, {click_y}",
+        thread="debug",
+    )
+    self._click_coords(x=click_x, y=click_y, type=type)
+    return
 ```
 
 It looks like a lot is going on here, but if you look closely, we're just doing a few simple steps:
@@ -392,34 +392,34 @@ Now, we need another bunch of utility methods, to run `Tesseract` and to find bo
 When we have this, we update `click_object`. We move the grid-related logic to a separate method, add a similar one with the OCR-related logic, and update the main action method like this:
 
 ```python
-    @action
-    def click_object(self, description: str, type: str) -> None:
-        """Click on an object on the screen
+@action
+def click_object(self, description: str, type: str) -> None:
+    """Click on an object on the screen
 
-        Args:
-            description (str): The description of the object including its general location, for example
-                "a round dark blue icon with the text 'Home' in the top-right of the image", please be a generic as possible
-            type (str): Type of click, can be 'single' for a single click or
-                'double' for a double click. If you need to launch an application from the desktop choose 'double'
-        """
+    Args:
+        description (str): The description of the object including its general location, for example
+            "a round dark blue icon with the text 'Home' in the top-right of the image", please be a generic as possible
+        type (str): Type of click, can be 'single' for a single click or
+            'double' for a double click. If you need to launch an application from the desktop choose 'double'
+    """
 
-        if type != "single" and type != "double":
-            raise ValueError("type must be'single' or 'double'")
+    if type != "single" and type != "double":
+        raise ValueError("type must be'single' or 'double'")
 
-        coords = self._ocr_based_click(description, type)
-        if coords is None:
-            coords = self._grid_based_click(description, type)
+    coords = self._ocr_based_click(description, type)
+    if coords is None:
+        coords = self._grid_based_click(description, type)
 
-        click_x = coords["x"]
-        click_y = coords["y"]
+    click_x = coords["x"]
+    click_y = coords["y"]
 
-        self.task.post_message(
-            role="assistant",
-            msg=f"Clicking coordinates {click_x}, {click_y}",
-            thread="debug",
-        )
-        self._click_coords(x=click_x, y=click_y, type=type)
-        return
+    self.task.post_message(
+        role="assistant",
+        msg=f"Clicking coordinates {click_x}, {click_y}",
+        thread="debug",
+    )
+    self._click_coords(x=click_x, y=click_y, type=type)
+    return
 ```
 
 Grab the complete code for the final version of `tool.py`[here](https://github.com/agentsea/surfhamster/blob/167e73de555986eec76bc25b57c2e433b37ee92f/surfhamster/tool.py).
