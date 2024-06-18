@@ -125,8 +125,10 @@ From the code point of view, we'll do the following:
 
 ## Adding SemanticDesktop
 
-_Note_: You can find the code for this step of the tutorial
-[here](https://github.com/agentsea/surfhamster/tree/1fc5562be20c2731974222405160aef2f4168717).
+<Note>
+  {" "}
+  You can find the code for this step of the tutorial [here](https://github.com/agentsea/surfhamster/tree/1fc5562be20c2731974222405160aef2f4168717).{" "}
+</Note>
 
 First, we need to refine our `SemanticDesktop`. It will interit from `Tool`, which would allow us pass it to the MLLM.
 
@@ -193,9 +195,11 @@ The only problem now is that the implementation of this `click_object` function 
 
 ## Adding Grid
 
-_Note_: You can find the code for this step of the tutorial
-[here](https://github.com/agentsea/surfhamster/tree/4a80d5f1fab16d61a0669ffca1507f6768c2b8dd).
-You'll need to add the fonts that you can see in the repository.
+<Note>
+  {" "}
+  You can find the code for this step of the tutorial [here](https://github.com/agentsea/surfhamster/tree/4a80d5f1fab16d61a0669ffca1507f6768c2b8dd).
+  You'll need to add the fonts that you can see in the repository.{" "}
+</Note>
 
 There are many ways to assist an MLLM in picking the right location of the object on a screenshot.
 None of them are perfect (to the best of our knowledge at the moment of writing this tutorial), but combining a few in one agent can get you pretty high accuracy. Let's start with something simple.
@@ -362,8 +366,10 @@ You can see the implementation in the [SurfSlicer](https://github.com/agentsea/s
 
 ## Adding Tesseract
 
-_Note_: You can find the code for this step of the tutorial
-[here](https://github.com/agentsea/surfhamster/tree/167e73de555986eec76bc25b57c2e433b37ee92f).
+<Note>
+  {" "}
+  You can find the code for this step of the tutorial [here](https://github.com/agentsea/surfhamster/tree/167e73de555986eec76bc25b57c2e433b37ee92f).{" "}
+</Note>
 
 As noted above, you can achieve the best results in your agent by combining many methods. One very simple but powerful idea is to use plain old fashioned OCR to find the text elements whenever it makes sense and click on them. But we use it with a twist. **Not only does OCR return the text, it returns the position of the text.**
 
