@@ -13,27 +13,27 @@ pip install surfkit
 
 ## Managing Devices
 
-### Create a device
-
-Note: Providers could be qemu for local or gce for the GCP cloud or aws for Amazon cloud. 
+#### Create a device
 
 ```sh
 surfkit create device --type desktop --provider qemu --name bar
 ```
 
-### List devices
+Providers supported are `qemu`, `ec2`, or `gce`.
+
+#### List devices
 
 ```sh
 surfkit list devices
 ```
 
-### View device in UI
+**View device in UI**
 
 ```sh
 surfkit view --name bar
 ```
 
-### Delete a device
+**Delete a device**
 
 ```sh
 surfkit delete device --name bar
