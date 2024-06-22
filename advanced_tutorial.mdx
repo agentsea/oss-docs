@@ -71,9 +71,9 @@ Let's briefly look inside the repo. There are a bunch of files there, but the mo
   - at the beginning of the task execution we explain to the MLLM/LLM what this agent is expected to do;
   - then we enter the loop:
     - given the task and the history of the chat, as well as the state of the desktop, we ask an
-      LLM to give us the next action and the reason for it;
-    - the next action is returned by LLM/MLLM as a JSON, which is checked against the available device and executed upon it;
-  - we exit the loop when either the LLM returns an action marked as "result" (which means that it thinks
+      MLLM/LLM to give us the next action and the reason for it;
+    - the next action is returned by MLLM/LLM as a JSON, which is checked against the available device and executed upon it;
+  - we exit the loop when either the MLLM/LLM returns an action marked as "result" (which means that it thinks
     that the task is solved), or the maximum amount of iterations is reached (30 by default).
 
 ### Architecture
