@@ -18,6 +18,8 @@ These are the basic steps to getting up and running:
 - Docker
 - Python >= 3.10
 - MacOS or Linux
+- Poetry
+- [Install QEMU](https://docs.hub.agentsea.ai/configuration/qemu) OR [Configure GCP](https://docs.hub.agentsea.ai/configuration/gcp) OR [Configure AWS](https://docs.hub.agentsea.ai/configuration/aws) - you need one of these to host a Device
 
 <Note>
   {" "}
@@ -34,16 +36,22 @@ pip install surfkit
 
 ## Run an Agent
 
-**Find available agents on the Hub**
+**Clone Robbie Gen 2 repository**
 
 ```
-surfkit find
+git clone git@github.com:agentsea/robbie-g2.git && cd robbie-g2
+```
+
+**Install dependencies**
+
+```
+poetry install
 ```
 
 **Create a new agent**
 
 ```
-surfkit create agent -t mariyadavydova/SurfSlicer -n agent01
+surfkit create agent -n agent01
 ```
 
 **List running agents**
@@ -54,18 +62,10 @@ surfkit list agents
 
 <AccordionGroup>
 
-<Accordion icon="sailboat" title="Create an agent on Kubernetes">
-To run the agent on Kubernetes all you need is a working kubeconfig
-
-```
-surfkit create agent -t mariyadavydova/SurfSlicer --runtime kube
-```
-
-</Accordion>
 <Accordion icon="key" title="Automatically add local API keys">
 Agents will prompt you for any keys they need. In order to skip this and automatically add local keys
 ```
-surfkit create agent -t mariyadavydova/SurfSlicer --local-keys
+surfkit create agent --local-keys
 ```
 
 </Accordion>
