@@ -43,7 +43,7 @@
   "navigation": [
     {
       "group": "Getting Started",
-      "pages": ["introduction", "quickstart", "advanced_tutorial"]
+      "pages": ["introduction", "quickstart", "advanced_tutorial", "deep_dive_gen_2"]
     },
     {
       "group": "Configuration",
