@@ -1,0 +1,92 @@
+---
+title: Introduction
+icon: hand-wave
+---
+
+`MLLM` is a library for simplifying communication with various Large Language Models (LLMs) and multi-modal LLMs  such as OpenAI GPT, Anthropic Claude and Google Gemini.
+
+It lets you
+- Create a router to communicate with multiple models (LLMs/MLLMs)
+- Configure your preference order for the models
+- Communicate with the models by sending your message thread to the models' completion endpoints
+- Retry communication upon failure
+- Enforce expected response formats
+
+MLLM uses [LiteLLM](https://www.litellm.ai/) under the hood.
+
+## Installation
+
+```
+pip install mllm
+```
+
+## Basic Example
+
+Provide the API keys for the different models (LLMs / MLLMs) that you would like to use:
+
+```python
+import os
+
+os.environ["OPENAI_API_KEY"] = "..."
+os.environ["ANTHROPIC_API_KEY"] = "..."
+os.environ["GEMINI_API_KEY"] = "..."
+```
+
+Create a Router object that can access all the desired models:
+
+```python
+from mllm import Router
+
+model_preferences = ["gpt-4-turbo", "anthropic/claude-3-opus-20240229", "gemini/gemini-1.5-pro-latest"]
+
+router = Router(preference=preferences)
+```
+
+Create a message thread using [ThreadMem](../threadmem/intro). MLLM also exposes `RoleMessage` and `RoleThread` from Threadmem. So, you can also create the thread using MLLM:
+
+```python
+from mllm import RoleThread
+
+thread = RoleThread(owner_id="owner_id")
+thread.post(role="user", msg="What do you see on this picture?", images=["https://upload.wikimedia.org/wikipedia/commons/c/c7/Tabby_cat_with_blue_eyes-3336579.jpg"])
+```
+
+Now, use the router to chat with the models using a message thread.
+
+```python
+response = router.chat(thread)
+```
+
+The router will communicate with your most preferred model first. It ensures that less preferred models are used only if the first one fails to respond.
+
+## Retry communication with model
+
+The router retires communication upon failure, and you can configure the maximum number of retries allowed.
+
+```python
+response = router.chat(thread, retries=3)
+```
+
+## Enforce response format
+
+To enforce an expected response format, first create a class describing the response format:
+
+```python
+from pydantic import BaseModel
+
+class Animal(BaseModel):
+    species: str
+    color: str
+```
+
+Now, use the `expect` parameter in the `router.chat()` call:
+
+```python
+response = router.chat(thread, expect=Animal)
+
+animal_parsed = response.parsed
+
+assert type(animal_parsed) == Animal
+```
+
+This is handy when you're working with multiple models and want to ensure consistent outputs.
