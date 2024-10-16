@@ -96,6 +96,10 @@
     {
       "group": "Package: ThreadMem",
       "pages": ["threadmem/intro", "threadmem/api", "threadmem/repo"]
+    },
+    {
+      "group": "Package: MLLM",
+      "pages": ["mllm/intro", "mllm/repo"]
     }
   ],
   "footerSocials": {
