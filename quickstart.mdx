@@ -19,7 +19,9 @@ These are the basic steps to getting up and running:
 - Python >= 3.10
 - MacOS or Linux
 - Poetry
-- [Install QEMU](https://docs.hub.agentsea.ai/configuration/qemu) OR [Configure GCP](https://docs.hub.agentsea.ai/configuration/gcp) OR [Configure AWS](https://docs.hub.agentsea.ai/configuration/aws) - you need one of these to host a Device
+
+If you want to create a desktop using Docker, that is all you need. To create a desktop with other providers:
+- [Install QEMU](https://docs.hub.agentsea.ai/configuration/qemu) OR [Configure GCP](https://docs.hub.agentsea.ai/configuration/gcp) OR [Configure AWS](https://docs.hub.agentsea.ai/configuration/aws)
 
 <Note>
   {" "}
@@ -88,11 +90,27 @@ surfkit logs agent <name> --follow
 
 Now that we've installed our agent, we need to give it a device to use.
 
-The fastest way to get up and running is to install QEMU, but the most scalable is to create devices in GCP or AWS.
+The fastest way to get up and running is to use Docker, but the most scalable is to create devices in GCP or AWS.
 
 To create an Ubuntu desktop for our agent to use, select one of the following options ▼
 
 <AccordionGroup>
+<Accordion icon="q" title="Create a local desktop using Docker">
+__Requirements__
+- Docker installed
+- At least 16GB of RAM
+
+```
+surfkit create device --provider docker -n desktop01
+```
+
+You can also skip the `provider` flag, because `docker` is the default provider:
+```
+surfkit create device  -n desktop01
+```
+
+</Accordion>
+
 <Accordion icon="q" title="Create a local desktop using Qemu">
 __Requirements__
 - QEMU installed ([macOS](https://www.qemu.org/download/#macos), [linux](https://www.qemu.org/download/#linux))

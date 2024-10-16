@@ -166,6 +166,17 @@ surfkit create tracker --name tracker01
 
 6. Create a device:
 
+  - If you are using Docker locally:
+
+```sh
+surfkit create device --provider docker --name device01
+```
+
+You can also skip the `provider` flag, because `docker` is the default provider:
+```sh
+surfkit create device --name device01
+```
+
   - If you are using QEMU:
 
 ```sh

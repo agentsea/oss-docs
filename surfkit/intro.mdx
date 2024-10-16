@@ -9,7 +9,7 @@ or in the cloud. Think of it as k8s for agents.
 There are several key concepts `SurfKit` operates with:
 
 - **Device** is a medium by which an agent interacts with the world. It defines a set of observations and actions available to the agent in
-  solving a task. We currently only support one kind of device which is a [Desktop](https://github.com/agentsea/devicebay) VM, that can run locally (via QEMU), in GCP or in AWS.
+  solving a task. We currently only support one kind of device which is a [Desktop](https://github.com/agentsea/devicebay) VM, that can run locally (via Docker or QEMU), in GCP or in AWS.
   We plan to implement more types of devices soon, or you can create one by implementing the [DeviceBay](https://github.com/agentsea/devicebay) protocol.
 - **Tracker** is an entity that takes care of assigning and observing the tasks among the agents. Trackers are run in Docker or in K8s.
 - **Type** is the type of the Agent, for example, [SurfPizza](https://github.com/agentsea/surfpizza), [SurfSlicer](https://github.com/agentsea/surfslicer),
