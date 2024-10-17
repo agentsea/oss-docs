@@ -88,6 +88,7 @@
       "group": "Package: ToolFuse",
       "pages": [
         "toolfuse/intro",
+        "toolfuse/calculator_agent",
         "toolfuse/weather_agent",
         "toolfuse/api",
         "toolfuse/repo"
