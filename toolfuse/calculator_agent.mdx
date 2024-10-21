@@ -1,0 +1,243 @@
+---
+title: "Example: Simple Calculator"
+description: A simple agent integrating with LLM to perform mathematical calculations
+icon: screwdriver-wrench
+---
+
+In this tutorial, we'll explore an end-to-end implementation of an agent. We will see how to create a custom tool (in this case, a simple calculator) using the Toolfuse library and integrate it with an LLM. The LLM can then utilize the tool's functionalities to perform tasks.
+
+First, we will provide a brief overview of the steps required to use Toolfuse with LLM. Then, we will elaborate each step with a complete example of the Calculator tool.
+You can play around with this example Calculator tool at [Jupyter notebook](https://github.com/agentsea/toolfuse/blob/main/examples/calculator/demo.ipynb).
+
+## Overview of Step-by-Step Guide
+
+1. **Define Your Tool**:
+   - Create a class that inherits from Tool.
+   - Use the `@action` decorator to define actions that the tool can perform.
+
+   ```python
+     class Calculator(Tool):
+         @action
+         def add(self, a: int, b: int) -> int:
+             return a + b
+   ```
+
+2. **Initialize the Tool and Thread**:
+   - Instantiate your tool and a RoleThread for message management.
+
+   ```python
+     self.tool = Calculator()
+     self.thread = RoleThread()
+   ```
+
+3. **Obtain the Tool Schema**:
+   - Retrieve the JSON schema of the tool to inform the LLM about available actions.
+
+   ```python
+     schema = self.tool.json_schema()
+   ```
+
+4. **Craft the System Prompt**:
+   - Create a system prompt that includes:
+     - The role of the assistant.
+     - The tool schema.
+     - Instructions on how to format responses.
+
+   ```python
+     system_prompt = f"""
+     You are a helpful assistant...
+     """
+     self.thread.post("system", system_prompt)
+   ```
+
+5. **Handle User Inputs**:
+   - Define a method to process user questions.
+
+   ```python
+     def ask(self, question: str) -> str:
+         ...
+   ```
+
+6. **Implement Request Processing with Retries**:
+   - Use the `@retry` decorator to handle potential exceptions and retry the request.
+   - Post the user's question to the thread.
+   - Get the LLM's response.
+   - Parse the response into the expected format.
+   - Execute the action using the tool.
+
+   ```python
+     @retry(...)
+     def request(self, thread: RoleThread, question: str) -> str:
+         ...
+   ```
+
+7. **Parse and Execute LLM Responses**:
+   - Convert the LLM's output into a `V1ActionSelection` object.
+   - Find the corresponding action in the tool.
+   - Execute the action with the provided parameters.
+
+   ```python
+     action_selection = V1ActionSelection(...)
+     action_object = self.tool.find_action(...)
+     result = self.tool.use(action_object, ...)
+   ```
+
+## Prerequisites
+
+- Python installed on your system.
+- Necessary Python packages installed:
+  - toolfuse
+  - rich
+  - threadmem
+  - litellm
+  - skillpacks
+  - tenacity
+  - dotenv
+
+## Setup
+
+1. **Import required modules**: Essential libraries for tool definition, threading, LLM completion, and logging.
+2. **Logging setup**: Configures logging to display information-level logs.
+3. **Environment variables**: Loads environment variables from a .env file for configurations.
+
+## Defining the Tool
+
+This is a straightforward implementation of the `Tool` class, designed to perform one primary operation: adding two numbers. 
+
+```python
+class Calculator(Tool):
+    def __init__(self):
+        super().__init__()
+
+    @action
+    def add(self, a: int, b: int) -> int:
+        return a + b
+```
+
+### Calculator Tool
+
+- Inherits from `Tool` class
+- Defines an `add` action using the `@action` decorator
+
+#### `add` Method
+
+- Accepts two integers as parameters
+- Returns their sum
+
+Pretty trivial, as you can see.
+
+## Integrating with the LLM
+
+The interesting part is not really the ability to perform mathematical calculations, but to use this tool to give an LLM a new skill. All we have to do is get the schema of the tool actions and observations and give them to our LLM. 
+
+### Thinker Class
+
+```python
+class Thinker():
+    def __init__(self):
+        self.tool = Calculator()
+        self.thread = RoleThread()
+
+        # Obtain the JSON schema of the tool
+        schema = self.tool.json_schema()
+        print(f"Tool schema:\n{schema}")
+
+        # Define the system prompt for the LLM
+        system_prompt = f"""
+        You are a helpful assistant able to perform complex mathematical operations. 
+        You have access to the following tools: {schema}. 
+        For each task that I send to you, you have to return your thoughts and the specific tool to use to solve it.
+        Please return your response in the following JSON format: {V1ActionSelection.model_json_schema()}
+        Please only return the JSON object without any additional text or formatting.
+        """
+        self.thread.post("system", system_prompt)
+```
+
+The Thinker class is responsible for managing the interaction between the LLM and the tool. It performs the following key functions:
+
+- Manages the interaction between the LLM and the tool
+- Initializes the Calculator tool and a RoleThread for message threading
+- Retrieves the JSON schema of the tool, which outlines its available actions and parameters.
+- Crafts a system prompt that instructs the LLM on how to utilize the tool and format responses
+
+
+### `ask` Method
+
+```python
+def ask(self, question: str) -> str:
+    thread_copy = self.thread.copy()
+    thread_copy, result = self.request(thread_copy, question)
+    self.thread = thread_copy
+    return result
+```
+
+The `ask` method will cover handling user queries. It performs the following functions:
+- Accepts a user question
+- Copies the current thread state
+- Processes the request
+
+### Processing Requests with Retries
+
+
+```python
+@retry(
+    stop=stop_after_attempt(5),
+    before_sleep=before_sleep_log(logger, logging.INFO),            
+)
+def request(self, thread: RoleThread, question: str) -> str:
+    thread.post("user", question)
+
+    response = completion(model="gpt-4o", messages=thread.to_openai())
+    print(f"Raw response:\n{response}")
+
+    # Parse the response into the expected format
+    action_selection = V1ActionSelection(**json.loads(response.choices[0].message.content))
+    print(f"Suggested action:\n{action_selection}")
+
+    # Find and execute the specified action
+    action_object = self.tool.find_action(action_selection.action.name)
+    print(f"Action object:\n{action_object}")
+
+    result = self.tool.use(action_object, **action_selection.action.parameters)
+    print(f"Action result:\n{result}")
+
+    return thread, result
+```
+
+- **@retry Decorator**: Retries the request up to 5 times if exceptions occur (e.g., incorrect response formats).
+- **Posting the Question**: Adds the user's question to the thread.
+- **LLM Completion**: Calls the LLM to get a response using the current thread messages.
+- **Parsing the Response**: Expects the LLM to return a JSON-formatted action selection, which is parsed into a V1ActionSelection object.
+- **Executing the Action**: Finds the corresponding action in the tool and executes it with the provided parameters.
+- **Result**: Returns the updated thread and the result of the action.
+
+### Running the Script
+
+1. Instantiate the `Thinker` class.
+2. Call the `ask` method with questions. The tool can handle both numerical and word-based numbers.
+3. Print or handle the results obtained from the LLM-assisted tool execution.
+
+```python
+if __name__ == "__main__":
+    thinker = Thinker()
+    result_1 = thinker.ask("What is 1234 + 8765?")
+    result_2 = thinker.ask("How much do I get if I add two and seven?")
+    print(f"Result 1:\n{result_1}")
+    print(f"Result 2:\n{result_2}")
+```
+
+
+By following this guide, you can integrate custom tools with an LLM using the Toolfuse library. This allows the LLM to perform specific actions and utilize external functionalities, enhancing its capabilities beyond text generation.
+
+Key benefits:
+- Extend LLM capabilities with custom tools
+- Perform specific actions beyond text generation
+- Utilize external functionalities seamlessly
+- Enhance overall AI system performance
+
+## What's next?
+
+* Play around with this example at [Jupyter notebook](https://github.com/agentsea/toolfuse/blob/main/examples/calculator/demo.ipynb).
+* Look at more realistic example of a [SeleniumBrowser tool implementation](https://github.com/agentsea/toolfuse/blob/main/examples/selenium/tool.py).
+* Dive into an elaborated implementation of the [Desktop tool](https://github.com/agentsea/agentdesk/blob/main/agentdesk/tool.py) from the [AgentDesk](https://github.com/agentsea/agentdesk) project, which adds the `Tool` sause on top of the [Agentd](https://github.com/agentsea/agentd)-powered VMs.
+
